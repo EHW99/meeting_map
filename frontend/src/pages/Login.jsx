@@ -81,7 +81,7 @@ function Login() {
 
         <div style={{ width: '100%', marginBottom: '12px' }}>
   <a
-    href={`https://kauth.kakao.com/oauth/authorize?client_id=d88db5d8494588ec7e3f5e9aa95b78d8&redirect_uri=http://localhost:3000/auth/kakao/callback&response_type=code&state=${encodeURIComponent(from)}`}
+    href={`https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REACT_APP_KAKAO_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT_URI}&response_type=code&state=${encodeURIComponent(from)}`}
     style={{
       display: 'block',
       width: '100%',

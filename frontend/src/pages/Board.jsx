@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaSearch } from 'react-icons/fa';
+import DOMPurify from 'dompurify';
 import './Board.css';
 import { useAppContext } from '../AppContext';
 import { useNavigate } from 'react-router-dom';
@@ -157,14 +158,14 @@ const Board = () => {
 
               <div className="post-content">
                 <div className='board-title-comment-count'>
-                <h2 className="board-title">{post.boardTitle}</h2>
+                <h2 className="board-title">{DOMPurify.sanitize(post.boardTitle)}</h2>
                 <p className='board-title-comment-count-count'>({post.commentCount})</p>
                 </div>
 
                 <div className="board-title-bottom">
-                  <p className="description">{post.boardDescription}</p>
+                  <p className="description">{DOMPurify.sanitize(post.boardDescription)}</p>
                   <p className="timestamp">
-                    {post.userNick} · {new Date(post.boardWriteDate).toLocaleDateString()}
+                    {DOMPurify.sanitize(post.userNick)} · {new Date(post.boardWriteDate).toLocaleDateString()}
                   </p>
                 </div>
               </div>

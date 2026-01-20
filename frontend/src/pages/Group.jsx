@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../AppContext'
 import axios from 'axios';
+import DOMPurify from 'dompurify';
 import { API_BASE_URL } from '../constants';
 import { timeAgo } from '../utils/timeAgo';
 import './Group.css';
@@ -329,9 +330,9 @@ const Group = () => {
                 {filteredMembers.map((m, idx) => (
                   <tr key={idx}>
                     <td><img src={m.userImg || "/images/default-pro.png"} alt="프로필" className="group-member-avatar" /></td>
-                    <td>{m.userNick}</td>
-                    <td>{m.userEmail}</td>
-                    <td>{m.groupTitle}</td>
+                    <td>{DOMPurify.sanitize(m.userNick)}</td>
+                    <td>{DOMPurify.sanitize(m.userEmail)}</td>
+                    <td>{DOMPurify.sanitize(m.groupTitle)}</td>
                     <td>
                       {user && (m.userId !== m.groupCreatedUserId && user.userId === m.groupCreatedUserId) &&
                       <button onClick={() => handleDeleteMember(m.userId)}>강제 탈퇴</button>}
@@ -379,7 +380,7 @@ const Group = () => {
             <ul>
               {groups.map((g, idx) => (
                 <li key={idx} onClick={() => setSelectedGroup(g)} style={{ cursor: 'pointer' }}>
-                  ✅ {g.groupTitle} 커뮤니티
+                  ✅ {DOMPurify.sanitize(g.groupTitle)} 커뮤니티
                 </li>
               ))}
             </ul>
@@ -388,12 +389,12 @@ const Group = () => {
 
         {selectedGroup && (
           <div className="community-page">
-            <h2>{selectedGroup.groupTitle} 커뮤니티</h2>
+            <h2>{DOMPurify.sanitize(selectedGroup.groupTitle)} 커뮤니티</h2>
             <button onClick={() => setSelectedGroup(null)}>← 뒤로가기</button>
 
             <div className="community-section">
               <h3>공지사항</h3>
-              <p>{selectedGroup.groupDescription ? selectedGroup.groupDescription : "공지사항이 없습니다."}</p>
+              <p>{selectedGroup.groupDescription ? DOMPurify.sanitize(selectedGroup.groupDescription) : "공지사항이 없습니다."}</p>
             </div>
 
             <div className="community-section">
@@ -407,7 +408,7 @@ const Group = () => {
                     <strong>{formatScheduleDate(item.details[0].scheduleStartTime)}</strong> ~
                     <strong> {formatScheduleDate2(item.details[item.details.length - 1].scheduleEndTime)}</strong>
                   </div>
-                  <div>{item.scheduleName}</div>
+                  <div>{DOMPurify.sanitize(item.scheduleName)}</div>
                   {user && user.userId === selectedGroup.groupCreatedUserId
                   ? <button onClick={() => handleDeleteSchedule(item.scheduleNo)}>삭제</button>
                   : <div></div>}
@@ -421,7 +422,7 @@ const Group = () => {
                               <strong>{formatScheduleDate2(d.scheduleStartTime)}</strong> ~
                               <strong> {formatScheduleDate2(d.scheduleEndTime)}</strong>
                             </div>
-                            <div>{d.scheduleContent}</div>
+                            <div>{DOMPurify.sanitize(d.scheduleContent)}</div>
                           </div>
                       ))}
                       </div>
@@ -478,18 +479,18 @@ const Group = () => {
               <div className="post-list">
                 {(groupDetails[selectedGroup.groupNo]?.posts || []).map((post) => (
                   <div key={post.groupBoardNo} className="post-item" style={{display: "block"}}>
-                    <h2>{post.groupBoardTitle}</h2>
-                    <p className="timestamp">{post.userNick} · {timeAgo(post.groupBoardUpdateDate)}</p>
-                    {user && (user.userId === selectedGroup.groupCreatedUserId || user.userId === post.userId) && 
+                    <h2>{DOMPurify.sanitize(post.groupBoardTitle)}</h2>
+                    <p className="timestamp">{DOMPurify.sanitize(post.userNick)} · {timeAgo(post.groupBoardUpdateDate)}</p>
+                    {user && (user.userId === selectedGroup.groupCreatedUserId || user.userId === post.userId) &&
                     <button className="post-delete" onClick={() => handleDeletePost(post.groupBoardNo)}>삭제</button>}
-                    <div className="content">{post.groupBoardContent}</div>
+                    <div className="content">{DOMPurify.sanitize(post.groupBoardContent)}</div>
                     <div className="comment-section">
                       <h4 style={{margin: "0"}}>💬 댓글</h4>
                       {post.comments?.length > 0 ? (
                         <ul className="comment-list">
                           {post.comments.map((c) => (
                             <li key={c.groupCommentNo} className="comment-item">
-                              <strong>{c.userNick}</strong>: {c.groupCommentContent} <span className="timestamp">{timeAgo(c.groupCommentWriteDate)}</span>
+                              <strong>{DOMPurify.sanitize(c.userNick)}</strong>: {DOMPurify.sanitize(c.groupCommentContent)} <span className="timestamp">{timeAgo(c.groupCommentWriteDate)}</span>
                             </li>
                           ))}
                         </ul>
@@ -526,7 +527,7 @@ const Group = () => {
                       className="group-member-avatar"
                     />
                     <span className="group-member-nick">
-                      {m.userNick}
+                      {DOMPurify.sanitize(m.userNick)}
                       {selectedGroup.groupCreatedUserId === m.userId && (
                         <span className="group-member-badge">그룹장</span>
                       )}

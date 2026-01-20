@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
+import DOMPurify from 'dompurify';
 import './PostDetail.css';
 import { useAppContext } from '../AppContext'; // AppContext import
+import { API_BASE_URL } from '../constants';
 
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = API_BASE_URL;
 
 
 const PostDetail = () => {
@@ -175,7 +177,7 @@ const PostDetail = () => {
         <div className="post-detail-page">
             <button onClick={() => navigate('/board')} className='board-content-back-button'><FaArrowLeft /> 뒤로가기</button>
 
-            <h2 className='board-detail-title'>{selectedPost.boardTitle}</h2>
+            <h2 className='board-detail-title'>{DOMPurify.sanitize(selectedPost.boardTitle)}</h2>
 
             <div className='board-content'>
                 {/* 이미지 출력 영역 */}
@@ -191,11 +193,11 @@ const PostDetail = () => {
                         ))}
                     </div>)}
 
-                {selectedPost.boardContent}
+                {DOMPurify.sanitize(selectedPost.boardContent)}
             </div>
-            <p>설명 : {selectedPost.boardDescription}</p>
+            <p>설명 : {DOMPurify.sanitize(selectedPost.boardDescription)}</p>
             <div className='board-content-bottom'>
-                <p className='board-content-writer'>글쓴이 : {selectedPost.userNick}</p>
+                <p className='board-content-writer'>글쓴이 : {DOMPurify.sanitize(selectedPost.userNick)}</p>
                 <p>{new Date(selectedPost.boardWriteDate).toLocaleString()}</p>
             </div>
 
@@ -223,7 +225,7 @@ const PostDetail = () => {
                 {comments.length > 0 ? (
                     comments.map((comment) => (
                         <div key={comment.commentNo} className="comment-item">
-                            <p><strong>{comment.userNick}</strong> · {comment.commentContent}</p>
+                            <p><strong>{DOMPurify.sanitize(comment.userNick)}</strong> · {DOMPurify.sanitize(comment.commentContent)}</p>
                             <p className="comment-date">
                                 {comment.timeAgo} {/* 이미 계산된 timeAgo 사용 */}
                             </p>
