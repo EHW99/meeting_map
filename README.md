@@ -1,127 +1,304 @@
 # MeetingMap
 
-경로 기반 장소 추천 + 자동 스케줄링 서비스
+> 경로 기반 장소 추천 및 자동 스케줄링 플랫폼
 
-## 프로젝트 소개
+약속 장소를 정할 때 "어디서 만날까?"라는 고민, 누구나 해봤을 것입니다.
+MeetingMap은 여러 사람의 출발지를 입력하면 **중간 지점을 자동으로 찾아주고**, 그 주변의 맛집, 카페, 관광지 등을 **경로 기반으로 추천**해주는 서비스입니다.
 
-출발지와 도착지를 입력하면 경로를 따라 다양한 장소를 자동 추천하고, 시각적 UI를 통해 스케줄을 빠르게 구성할 수 있는 플랫폼입니다.
+추천받은 장소들로 **일정을 자동 생성**하거나, 직접 커스터마이징하여 나만의 스케줄을 만들 수 있습니다.
 
-**배포 URL**: https://meeting-map.kro.kr
+## 배포 URL
+https://meeting-map.kro.kr
 
-## 기술 스택
+## 개발 기간
+2025.03 ~ 2025.07 (5개월)
 
-| 구분 | 기술 |
-|------|------|
-| Backend | Spring Boot, Java 17, JPA, MySQL |
-| Frontend | React 19, JavaScript |
-| API | Kakao Maps, TMap, Google Places, OpenAI, Tour API |
-| Infra | AWS S3 |
+## 팀 구성
+- 4인 팀 프로젝트
+- 담당: **Backend 개발** (Spring Boot, REST API 설계, DB 설계, 외부 API 연동)
 
-## 시연
+---
+
+## 시연 영상
 
 <details>
-<summary>회원가입 / 로그인</summary>
-<img src="asset/Animation5.gif" width="600"/>
+<summary><b>회원가입 / 로그인</b></summary>
+<br>
+<img src="asset/Animation5.gif" width="700"/>
+<p>일반 로그인과 카카오 OAuth 로그인을 지원합니다.</p>
 </details>
 
 <details>
-<summary>메인페이지</summary>
-<img src="asset/Animation4.gif" width="600"/>
+<summary><b>메인페이지</b></summary>
+<br>
+<img src="asset/Animation4.gif" width="700"/>
+<p>오늘의 추천 게시글과 랜덤 장소 추천 기능을 제공합니다.</p>
 </details>
 
 <details>
-<summary>지도 - 출발지/도착지 경로</summary>
-<img src="asset/Animation1.gif" width="600"/>
+<summary><b>지도 - 출발지/도착지 경로 탐색</b></summary>
+<br>
+<img src="asset/Animation1.gif" width="700"/>
+<p>출발지와 도착지를 입력하면 최적 경로와 주변 장소를 표시합니다.</p>
 </details>
 
 <details>
-<summary>지도 - 다중 입력 후 중간지점</summary>
-<img src="asset/Animation2.gif" width="600"/>
+<summary><b>지도 - 다중 출발지 중간지점 탐색</b></summary>
+<br>
+<img src="asset/Animation2.gif" width="700"/>
+<p>최대 4개의 출발지를 입력하면 모두가 만나기 좋은 중간 지점을 자동 계산합니다.</p>
 </details>
 
 <details>
-<summary>스케줄 생성</summary>
-<img src="asset/Animation9.gif" width="600"/>
+<summary><b>스케줄 생성</b></summary>
+<br>
+<img src="asset/Animation9.gif" width="700"/>
+<p>AI 추천 또는 직접 장소를 선택하여 일정을 생성할 수 있습니다.</p>
 </details>
 
 <details>
-<summary>게시판 / 글쓰기</summary>
-<img src="asset/Animation10.gif" width="600"/>
+<summary><b>게시판 / 글쓰기</b></summary>
+<br>
+<img src="asset/Animation10.gif" width="700"/>
+<p>카테고리별 게시판에서 장소 후기를 공유하고 소통합니다.</p>
 </details>
 
 <details>
-<summary>마이페이지</summary>
-<img src="asset/Animation11.gif" width="600"/>
+<summary><b>마이페이지</b></summary>
+<br>
+<img src="asset/Animation11.gif" width="700"/>
+<p>내가 작성한 글, 좋아요한 글, 저장한 글, 일정을 관리합니다.</p>
 </details>
 
 <details>
-<summary>그룹</summary>
-<img src="asset/Animation12.gif" width="600"/>
+<summary><b>그룹 기능</b></summary>
+<br>
+<img src="asset/Animation12.gif" width="700"/>
+<p>그룹을 만들어 멤버들과 일정을 공유하고 소통할 수 있습니다.</p>
 </details>
+
+---
 
 ## 주요 기능
 
-### 메인 페이지
-- 출발지/도착지 입력 시 중간지점 자동 탐색 (최대 4개)
-- 오늘의 추천 게시글
-- 랜덤 장소 추천
+### 1. 중간 지점 탐색
+- 최대 4개의 출발지 입력 시 모든 인원이 만나기 좋은 중간 지점 자동 계산
+- 각 출발지에서 중간 지점까지의 예상 소요 시간 표시
 
-### 지도 / 카테고리
-- 선택 위치 기반 장소 표시
-- 카테고리별 필터링 (관광지, 음식점, 카페 등)
-- 차량 / 대중교통 / 도보 경로 지원
+### 2. 경로 기반 장소 추천
+- 선택한 위치 주변의 장소를 카테고리별로 필터링 (관광지, 음식점, 카페, 숙박 등)
+- Kakao Maps, Google Places, Tour API 데이터를 통합하여 풍부한 장소 정보 제공
+- 장소별 평점, 리뷰, 상세 정보 확인 가능
 
-### 스케줄 생성
-- AI 기반 추천 스케줄
-- 직접 장소 추가/삭제하여 일정 구성
-- 지도 위 경로 및 마커 표시
+### 3. 스케줄 생성 및 관리
+- **AI 추천 스케줄**: OpenAI API를 활용하여 선택한 장소들의 최적 방문 순서 추천
+- **직접 생성**: 원하는 장소를 직접 추가/삭제하여 커스텀 일정 구성
+- 이동 수단 선택 (차량 / 대중교통 / 도보) 및 예상 소요 시간 계산
+- 생성된 스케줄 저장 및 수정
 
-### 게시판
-- 카테고리별 게시판 (맛집, 카페, 놀거리, 일정/코스)
-- 글쓰기, 댓글, 좋아요, 저장 기능
+### 4. 경로 탐색
+- TMap API 연동으로 실제 경로 및 소요 시간 계산
+- 차량, 대중교통, 도보 3가지 이동 수단 지원
+- 지도 위에 경로 폴리라인 시각화
 
-### 마이페이지
-- 내가 쓴 글, 좋아요한 글, 저장한 글 관리
-- 친구 목록 및 개인 일정 조회
-- 프로필 설정
+### 5. 커뮤니티 (게시판)
+- 카테고리별 게시판 운영 (공지사항, Q&A, 자유게시판)
+- 이미지 첨부 기능 (AWS S3 연동)
+- 좋아요, 싫어요, 스크랩, 댓글 기능
 
-### 그룹
-- 그룹 생성 및 멤버 관리
+### 6. 그룹
+- 그룹 생성 및 멤버 초대
 - 그룹 내 스케줄 공유
-- 그룹 게시판
+- 그룹 전용 게시판
 
-### 인증
-- 일반 회원가입 / 로그인
-- 카카오 로그인
+### 7. 소셜 기능
+- 친구 추가/삭제, 친구 요청 관리
+- 친구에게만 활동 공개 설정
+
+### 8. 인증
+- JWT 기반 인증
+- 카카오 OAuth 2.0 로그인 지원
+
+---
+
+## 기술 스택
+
+### Backend
+| 기술 | 설명 |
+|------|------|
+| Java 17 | 메인 언어 |
+| Spring Boot 3.4 | 웹 프레임워크 |
+| Spring Security | 인증/인가 (JWT) |
+| Spring Data JPA | ORM |
+| MySQL 8.0 | 데이터베이스 |
+| WebFlux (WebClient) | 외부 API 비동기 호출 |
+| AWS S3 | 이미지 파일 저장 |
+
+### Frontend
+| 기술 | 설명 |
+|------|------|
+| React 19 | UI 라이브러리 |
+| React Router 7 | 라우팅 |
+| Axios | HTTP 클라이언트 |
+| Kakao Maps SDK | 지도 표시 |
+
+### 외부 API
+| API | 용도 |
+|-----|------|
+| Kakao Maps API | 지도 표시, 좌표 변환, 장소 검색 |
+| TMap API | 경로 탐색 (차량, 대중교통, 도보) |
+| Google Places API | 장소 상세 정보, 평점, 리뷰 |
+| Tour API (공공데이터) | 국내 관광지, 음식점, 숙박 정보 |
+| OpenAI API | AI 기반 스케줄 추천 |
+
+### Infra
+| 기술 | 설명 |
+|------|------|
+| AWS S3 | 이미지 저장소 |
+
+---
+
+## 시스템 아키텍처
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────────────────────┐
+│   Client    │────▶│   React     │────▶│      Spring Boot API        │
+│  (Browser)  │     │  (Frontend) │     │         (Backend)           │
+└─────────────┘     └─────────────┘     └──────────────┬──────────────┘
+                                                       │
+                    ┌──────────────────────────────────┼──────────────────────────────────┐
+                    │                                  │                                  │
+                    ▼                                  ▼                                  ▼
+            ┌──────────────┐                  ┌──────────────┐                   ┌──────────────┐
+            │    MySQL     │                  │   AWS S3     │                   │ External APIs│
+            │  (Database)  │                  │   (Storage)  │                   │              │
+            └──────────────┘                  └──────────────┘                   └──────────────┘
+                                                                                        │
+                                              ┌─────────────────────────────────────────┤
+                                              │              │              │           │
+                                              ▼              ▼              ▼           ▼
+                                         Kakao API      TMap API     Google API    OpenAI API
+                                                                                   Tour API
+```
+
+---
+
+## 프로젝트 구조
+
+```
+meeting_map/
+├── backend/
+│   └── src/main/java/com/capstone/meetingmap/
+│       ├── api/                    # 외부 API 연동
+│       │   ├── kakao/              # 카카오 API (지도, 좌표)
+│       │   ├── tmap/               # TMap API (경로 탐색)
+│       │   ├── google/             # Google Places API
+│       │   ├── tourapi/            # 공공데이터 Tour API
+│       │   ├── openai/             # OpenAI API (AI 스케줄)
+│       │   └── amazon/             # AWS S3 (파일 업로드)
+│       ├── auth/                   # 인증 (로그인, JWT)
+│       ├── user/                   # 회원 관리
+│       ├── board/                  # 게시판
+│       ├── comment/                # 댓글
+│       ├── schedule/               # 스케줄
+│       ├── group/                  # 그룹
+│       ├── friendship/             # 친구
+│       ├── map/                    # 지도/장소
+│       ├── path/                   # 경로 탐색
+│       ├── config/                 # 설정 (Security, WebClient 등)
+│       └── jwt/                    # JWT 유틸리티
+│
+├── frontend/
+│   └── src/
+│       ├── pages/                  # 페이지 컴포넌트
+│       │   ├── Home.jsx            # 메인 페이지
+│       │   ├── Map.jsx             # 지도 페이지
+│       │   ├── Schedule.jsx        # 스케줄 생성
+│       │   ├── Board.jsx           # 게시판
+│       │   ├── Group.jsx           # 그룹
+│       │   ├── Mypage.jsx          # 마이페이지
+│       │   └── Login.jsx           # 로그인
+│       ├── components/             # 재사용 컴포넌트
+│       └── utils/                  # 유틸리티 함수
+│
+├── docs/                           # API 문서
+└── asset/                          # 시연 GIF
+```
+
+---
+
+## DB 설계 (주요 엔티티)
+
+| 엔티티 | 설명 |
+|--------|------|
+| User | 회원 정보 (일반/카카오) |
+| Board | 게시글 |
+| BoardFile | 게시글 첨부파일 |
+| Comment | 댓글 |
+| Schedule | 스케줄 |
+| ScheduleDetail | 스케줄 상세 (장소별 시간) |
+| Group | 그룹 |
+| GroupMember | 그룹 멤버 |
+| GroupBoard | 그룹 게시글 |
+| Friendship | 친구 관계 |
+
+---
+
+## API 문서
+
+| API | 설명 | 문서 |
+|-----|------|------|
+| User API | 회원가입, 정보 조회/수정, 탈퇴 | [UserAPI.md](docs/UserAPI.md) |
+| Auth API | 로그인, 로그아웃, 카카오 인증 | [AuthAPI.md](docs/AuthAPI.md) |
+| Board API | 게시글 CRUD, 좋아요, 스크랩 | [BoardAPI.md](docs/BoardAPI.md) |
+| Comment API | 댓글 CRUD | [CommentAPI.md](docs/CommentAPI.md) |
+| Map API | 장소 검색, 카테고리 조회 | [MapAPI.md](docs/MapAPI.md) |
+| Path API | 경로 탐색 (차량/대중교통/도보) | [PathAPI.md](docs/PathAPI.md) |
+| Schedule API | 스케줄 생성/저장/수정/삭제 | [ScheduleAPI.md](docs/ScheduleAPI.md) |
+| Group API | 그룹 관리, 멤버 초대, 스케줄 공유 | [GroupAPI.md](docs/GroupAPI.md) |
+| GroupBoard API | 그룹 게시판 | [GroupBoardAPI.md](docs/GroupBoardAPI.md) |
+| Friendship API | 친구 추가/삭제/요청 관리 | [FriendshipAPI.md](docs/FriendshipAPI.md) |
+
+---
 
 ## 로컬 실행 방법
+
+### 사전 요구사항
+- Java 17
+- MySQL 8.0
+- Node.js 18+
 
 ### Backend
 ```bash
 cd backend
-# .env.example을 참고하여 .env 파일 생성
+
+# 1. 환경 변수 설정
+cp .env.example .env
+# .env 파일에 실제 API 키 입력
+
+# 2. 데이터베이스 생성
+mysql -u root -p -e "CREATE DATABASE capstone_db"
+
+# 3. 실행
 ./gradlew bootRun
 ```
 
 ### Frontend
 ```bash
 cd frontend
+
+# 1. 환경 변수 설정
+cp .env.example .env
+# .env 파일에 실제 API 키 입력
+
+# 2. 의존성 설치
 npm install
-# .env.example을 참고하여 .env 파일 생성
+
+# 3. 실행
 npm start
 ```
 
-## API 문서
+---
 
-| API | 설명 |
-|-----|------|
-| [UserAPI](docs/UserAPI.md) | 회원 관련 |
-| [AuthAPI](docs/AuthAPI.md) | 인증 (로그인/로그아웃) |
-| [BoardAPI](docs/BoardAPI.md) | 게시판 |
-| [CommentAPI](docs/CommentAPI.md) | 댓글 |
-| [MapAPI](docs/MapAPI.md) | 지도/장소 |
-| [PathAPI](docs/PathAPI.md) | 경로 탐색 |
-| [ScheduleAPI](docs/ScheduleAPI.md) | 스케줄 |
-| [GroupAPI](docs/GroupAPI.md) | 그룹 |
-| [GroupBoardAPI](docs/GroupBoardAPI.md) | 그룹 게시판 |
-| [FriendshipAPI](docs/FriendshipAPI.md) | 친구 |
+## 라이선스
+이 프로젝트는 학습 목적으로 제작되었습니다.
