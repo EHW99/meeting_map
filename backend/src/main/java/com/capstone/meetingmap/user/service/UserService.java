@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,13 +24,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final S3Service s3Service;
+    private final S3Service s3Service; // null일 수 있음 (S3 미설정 시)
 
-    public UserService(UserRepository userRepository, UserRoleRepository userRoleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, S3Service s3Service) {
+    public UserService(UserRepository userRepository, UserRoleRepository userRoleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, Optional<S3Service> s3Service) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.s3Service = s3Service;
+        this.s3Service = s3Service.orElse(null);
     }
 
     // 중복 아이디 검증
@@ -104,8 +105,11 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
 
-        // 프로필 사진 처리
+        // 프로필 사진 처리 (S3 설정 시에만)
         if (profileImage != null && !profileImage.isEmpty()) {
+            if (s3Service == null) {
+                throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "파일 업로드 서비스가 비활성화되어 있습니다 (S3 미설정)");
+            }
             try {
                 String imageUrl = s3Service.upload(profileImage);
                 user.setProfileImageUrl(imageUrl);

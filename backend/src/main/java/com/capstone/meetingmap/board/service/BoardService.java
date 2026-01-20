@@ -32,19 +32,19 @@ public class BoardService {
     private final UserRepository userRepository;
     private final BoardViewRepository boardViewRepository;
     private final CommentRepository commentRepository;
-    private final BoardFileService boardFileService;
+    private final BoardFileService boardFileService; // null일 수 있음 (S3 미설정 시)
     private final BoardFileRepository boardFileRepository;
     private final BoardLikeRepository boardLikeRepository;
     private final BoardScrapRepository boardScrapRepository;
     private final ScheduleRepository scheduleRepository;
 
-    public BoardService(CategoryRepository categoryRepository, BoardRepository boardRepository, UserRepository userRepository, BoardViewRepository boardViewRepository, CommentRepository commentRepository, BoardFileService boardFileService, BoardFileRepository boardFileRepository, BoardLikeRepository boardLikeRepository, BoardScrapRepository boardScrapRepository, ScheduleRepository scheduleRepository) {
+    public BoardService(CategoryRepository categoryRepository, BoardRepository boardRepository, UserRepository userRepository, BoardViewRepository boardViewRepository, CommentRepository commentRepository, Optional<BoardFileService> boardFileService, BoardFileRepository boardFileRepository, BoardLikeRepository boardLikeRepository, BoardScrapRepository boardScrapRepository, ScheduleRepository scheduleRepository) {
         this.categoryRepository = categoryRepository;
         this.boardRepository = boardRepository;
         this.userRepository = userRepository;
         this.boardViewRepository = boardViewRepository;
         this.commentRepository = commentRepository;
-        this.boardFileService = boardFileService;
+        this.boardFileService = boardFileService.orElse(null);
         this.boardFileRepository = boardFileRepository;
         this.boardLikeRepository = boardLikeRepository;
         this.boardScrapRepository = boardScrapRepository;
@@ -141,10 +141,16 @@ public class BoardService {
 
         Board board = boardRepository.save(boardRequestDto.toEntity(category, user, schedule));
 
-        try {
-            boardFileService.saveFiles(board, files);
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지를 저장하는데 실패했습니다");
+        // 파일 업로드 (S3 설정 시에만)
+        if (files != null && !files.isEmpty()) {
+            if (boardFileService == null) {
+                throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "파일 업로드 서비스가 비활성화되어 있습니다 (S3 미설정)");
+            }
+            try {
+                boardFileService.saveFiles(board, files);
+            } catch (IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지를 저장하는데 실패했습니다");
+            }
         }
 
         return board.getBoardNo();
@@ -182,10 +188,13 @@ public class BoardService {
             }
         }
 
-        // 파일 처리
+        // 파일 처리 (S3 설정 시에만)
         if (files != null && !files.isEmpty()) {
+            if (boardFileService == null) {
+                throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "파일 업로드 서비스가 비활성화되어 있습니다 (S3 미설정)");
+            }
             try {
-            List<BoardFile> newFiles = boardFileService.saveFiles(board, files);
+                List<BoardFile> newFiles = boardFileService.saveFiles(board, files);
                 // 파일 업로드 후 List<BoardFile> 엔티티 리스트 생성 및 저장
                 board.getBoardFiles().addAll(newFiles);
             } catch (IOException e) {
@@ -208,8 +217,13 @@ public class BoardService {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없거나 삭제 권한이 없습니다");
         }
 
-        // 게시글의 파일 먼저 삭제
-        boardFileService.deleteFiles(boardNo);
+        // 게시글의 파일 먼저 삭제 (S3 설정 시에만 S3에서 삭제, DB 레코드는 항상 삭제)
+        if (boardFileService != null) {
+            boardFileService.deleteFiles(boardNo);
+        } else {
+            // S3 미설정 시 DB 레코드만 삭제
+            boardFileRepository.deleteAllByBoard_BoardNo(boardNo);
+        }
 
         // 게시글에 달린 댓글 삭제
         commentRepository.deleteByBoard_BoardNo(boardNo);

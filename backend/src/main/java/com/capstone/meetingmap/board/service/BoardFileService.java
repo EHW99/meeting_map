@@ -4,6 +4,7 @@ import com.capstone.meetingmap.api.amazon.service.S3Service;
 import com.capstone.meetingmap.board.entity.Board;
 import com.capstone.meetingmap.board.entity.BoardFile;
 import com.capstone.meetingmap.board.repository.BoardFileRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ConditionalOnBean(S3Service.class)
 public class BoardFileService {
     private final BoardFileRepository boardFileRepository;
     private final S3Service s3Service;
