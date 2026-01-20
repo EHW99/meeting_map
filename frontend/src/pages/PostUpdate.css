@@ -1,0 +1,145 @@
+/* 게시글 수정 페이지 전체 */
+.post-update-page {
+  flex: 1;
+  padding: 2rem 3rem;
+  background-color: white;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* 뒤로가기 버튼 */
+.back-button {
+  background: none;
+  border-radius: 5px;
+  border: 1px solid rgb(126, 126, 126);
+  background-color: #dbdbdb;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  padding: 5px 5px;
+}
+
+.back-button:hover {
+  background-color: #b3b3b3;
+  color: white;
+}
+
+/* 폼 전체 */
+.post-update-form {
+  margin: 0 auto;
+  width: 50%;
+  border: 1px solid rgb(126, 126, 126);
+  border-radius: 10px;
+  /* box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15); */
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 20px 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+  background-color: #fafafa;
+}
+
+/* 입력 필드 그룹 */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* 공통 입력 필드 스타일 */
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
+}
+
+/* 내용 textarea 전용 스타일 */
+.form-group textarea {
+  height: 200px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+/* 전송 버튼 */
+.form-group button[type="submit"] {
+  align-self: flex-start;
+  background-color: #16a34a;
+  color: white;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.form-group button[type="submit"]:hover {
+  background-color: #15803d;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  width: 35%;
+  background-color: #808080;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.image-preview-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.image-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.board-images {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.board-image {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.board-write-top-h2 {
+  border: 1px solid #b3b3b3;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+  background-color: white;
+  border-radius: 10px;
+  padding: 7px 0px
+}
+
+.board-write-label {
+  color: #979797;
+  font-size: 1rem;
+}

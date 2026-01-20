@@ -1,0 +1,241 @@
+/* Schedule.css */
+.schedule-wrapper {
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+}
+
+.schedule-container {
+  margin-top: 20px;
+  flex: 1;
+}
+
+.schedule-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.schedule-sub {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.map-placeholder {
+  width: 73%;
+  height: 400px;
+  background-color: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  border: solid gray;
+  border-radius: 15px;
+}
+
+.map-image {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.category-icons {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 20px;
+}
+
+.category-btn {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  background-color: #f7f7f7;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.category-btn.active {
+  background-color: #4299e1;
+  color: white;
+  border-color: #4299e1;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.input-group button {
+  padding: 8px 16px;
+  background-color: #38a169;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.estimated-time {
+  font-size: 14px;
+  color: #333;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  margin-top: 15px;
+}
+
+.action-btn {
+  padding: 8px 16px;
+  background-color: #4a5568;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.section-box {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fafafa;
+  height: 50vh;       /* ✅ 뷰포트 절반 높이로 설정 */
+  overflow-y: auto;   /* ✅ 내부 스크롤 가능하게 */
+  box-sizing: border-box;
+}
+
+
+.section-box ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.section-box li {
+  padding: 6px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-box .delete-btn {
+  margin-left: 10px;
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Drag & Drop items */
+.section-box li[draggable] {
+  border: 1px dashed #aaa;
+  padding: 8px;
+  margin-bottom: 5px;
+  background-color: #fff;
+  border-radius: 4px;
+}
+
+.schedule-bottom-row {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.schedule-bottom-row .section-box {
+  flex: 1;
+  min-width: 0;
+  background-color: #fff;
+}
+
+.schedule-route-box {
+  max-height: 170px; 
+  max-width: 1610px;
+  overflow-y: auto;      /* ✅ 넘치면 스크롤 */
+  padding: 10px;
+  background-color: #eef5ff;
+  border-radius: 8px;
+  border: solid 3px gray !important;}
+
+.schedule-map-wrapper {
+  position: relative;
+}
+
+.schedule-location-box {
+  position: absolute;
+  bottom: 410px;
+  right: 10px;
+  background-color: #fff8dc;
+  padding: 10px 15px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  width: fit-content;
+  max-width: 240px;
+}
+
+.schedule-category-panel {
+  position: absolute;
+  top: 170px;             /* 지도 내부에서의 상대 위치 */
+  right: 6px;
+  width: 400px;
+  height: 44vh;
+  background-color: #ffffff;
+  z-index: 10;
+  border: 2px solid gray;
+  border-radius: 10px;
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.schedule-category-style {
+  border: 2px solid #888;
+  background-color: #fefefe;
+  padding: 20px;
+  height: 390px !important;
+  width: 425px !important;
+  overflow-y: auto;         /* ✅ 내부 스크롤 가능하도록 설정 */
+  box-sizing: border-box;     /* ✅ padding 포함 높이 계산 */
+  border-radius: 12px;
+}
+
+
+.schedule-category-style .place-item {
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  margin-bottom: 16px;
+  padding: 12px;
+}
+
+.route-box.schedule-route-box {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+@media (max-width: 768px) {
+
+  .route-box.schedule-route-box {
+    width: 50%;
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+}

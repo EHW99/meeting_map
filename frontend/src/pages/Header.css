@@ -1,0 +1,38 @@
+/* 고정 X, 레이아웃 내에서 우측 정렬 */
+.header-buttons {
+  position: absolute; /* 또는 relative 안에 absolute */
+  top: 16px;
+  right: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 버튼 스타일 */
+.header-buttons button {
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  background-color: white;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* 닉네임 */
+.header-buttons .nickname {
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+/* 햄버거 버튼은 고정 유지 가능 */
+.hamburger {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 10000;
+}

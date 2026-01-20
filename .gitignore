@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+build/
+.gradle/
+*.class
+*.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# Environment & Secrets
+.env
+docs.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude
+.claude/

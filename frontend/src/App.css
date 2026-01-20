@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.App {
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .App {
+    padding-bottom: 70px; /* 하단 메뉴 높이 + 여유 */
+  }
+}
