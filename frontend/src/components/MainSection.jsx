@@ -1,7 +1,3 @@
-// ✅ 최종 MainSection.jsx: 카카오 API 자동완성 → 백엔드 자동완성으로 전환
-// ✅ 드롭다운은 input 아래에 정확히 위치
-// ✅ Tmap 연동을 위해 placeName만 사용하여 저장 (주소/좌표는 백엔드 응답 활용)
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -46,7 +42,6 @@ export default function MainSection() {
   const [topPosts, setTopPosts] = useState([]);
   const navigate = useNavigate();
   const timeoutRef = useRef(null);
-  
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -59,13 +54,14 @@ export default function MainSection() {
     const random = randomPlaces[Math.floor(Math.random() * randomPlaces.length)];
     setRandomPlace(random);
   }, []);
+
   useEffect(() => {
     const updatePosts = () => {
       const shuffled = [...dummyPosts].sort(() => 0.5 - Math.random());
       setTopPosts(shuffled.slice(0, 3));
     };
-    updatePosts(); // 최초 1회
-    const interval = setInterval(updatePosts, 5000); // 이후 5초마다
+    updatePosts();
+    const interval = setInterval(updatePosts, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -74,7 +70,7 @@ export default function MainSection() {
     try {
       const res = await axios.get(`${API_BASE_URL}/map/autocomplete?name=${query}`);
       const key = index !== null ? index : 'single';
-      const data = res.data.slice(0, 10); // 최대 10개 제한
+      const data = res.data.slice(0, 10);
       setSuggestions((prev) => ({ ...prev, [key]: data }));
     } catch (err) {
       const key = index !== null ? index : 'single';
@@ -156,19 +152,15 @@ export default function MainSection() {
 
   const handleRandomPlaceClick = async () => {
     try {
-      // 1) 자동완성 API 호출 ('/map/autocomplete' 경로 확인)
       const res = await axios.get(
         `${API_BASE_URL}/map/autocomplete?name=${encodeURIComponent(randomPlace)}`
       );
       if (!res.data || res.data.length === 0) {
         return alert('장소 정보를 찾을 수 없습니다.');
       }
-      // 2) 첫 번째 추천 결과를 선택
       const place = res.data[0];
-
       const imageUrl = placeBackgrounds[randomPlace];
 
-      // 3) Map 페이지로 이동하면서 state 에 전체 place 객체 전달
       navigate('/map?search=random-place', {
         state: {
           fromRandomPlace: true,
@@ -187,170 +179,260 @@ export default function MainSection() {
     }
   };
 
-
-  //const topPosts = [...dummyPosts].sort((a, b) => (b.views + b.likes * 2) - (a.views + a.likes * 2)).slice(0, 3);
-
-  return (  
-  <div className="page-container">
-      <header className="header">
-        <h1 className="logo-text">MeetingMap</h1>
-      </header>
-
-      <section className="image-slider">
+  return (
+    <div className="home-page">
+      {/* Hero Section */}
+      <section className="hero-section">
         {images.map((image, index) => (
           <div
             key={index}
-            className={`slider-background ${index === currentImage ? 'visible' : ''}`}
+            className={`hero-background ${index === currentImage ? 'visible' : ''}`}
             style={{ backgroundImage: `url(${image})` }}
           />
         ))}
-        <div className="main-box">
-          <p className="subtitle">Enjoy your journey!</p>
+        <div className="hero-overlay" />
 
-          {mode === 'midpoint' ? (
-            <div className="input-vertical">
-              {departures.map((value, index) => (
-                <div className="input-wrapper" key={index}>
-                  <input
-                    type="text"
-                    className="input-box with-button"
-                    placeholder="출발지"
-                    value={value}
-                    onChange={(e) => handleDepartureChange(index, e.target.value)}
-                  />
-                  <button className="compass-btn" onClick={() => handleGetCurrentLocation(index)}>🧭</button>
-                  {index >= 2 && <button className="inline-remove" onClick={() => removeDepartureInput(index)}>×</button>}
-                  {suggestions[index] && suggestions[index].length > 0 && (
-                    <ul className="dropdown">
-                      {suggestions[index].map((s, i) => (
-                        <li key={i} onClick={() => handleSelectSuggestion(s.placeName, index)}>{s.placeName}</li>
+        <div className="hero-content">
+          <h1 className="hero-title">만남의 중심을 찾아보세요</h1>
+          <p className="hero-subtitle">친구들과의 최적의 만남 장소를 쉽고 빠르게 찾아드립니다</p>
+
+          <div className="search-container">
+            {/* Mode Toggle */}
+            <div className="mode-toggle">
+              <button
+                className={`mode-btn ${mode === 'route' ? 'active' : ''}`}
+                onClick={() => setMode('route')}
+              >
+                경로 찾기
+              </button>
+              <button
+                className={`mode-btn ${mode === 'midpoint' ? 'active' : ''}`}
+                onClick={() => setMode('midpoint')}
+              >
+                중간지점 찾기
+              </button>
+            </div>
+
+            {mode === 'midpoint' ? (
+              <div className="search-form">
+                {departures.map((value, index) => (
+                  <div className="input-group" key={index}>
+                    <div className="input-wrapper">
+                      <input
+                        type="text"
+                        className="search-input"
+                        placeholder={`출발지 ${index + 1}`}
+                        value={value}
+                        onChange={(e) => handleDepartureChange(index, e.target.value)}
+                      />
+                      <button
+                        className="location-btn"
+                        onClick={() => handleGetCurrentLocation(index)}
+                        title="현재 위치"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10"/>
+                          <circle cx="12" cy="12" r="3"/>
+                          <line x1="12" y1="2" x2="12" y2="6"/>
+                          <line x1="12" y1="18" x2="12" y2="22"/>
+                          <line x1="2" y1="12" x2="6" y2="12"/>
+                          <line x1="18" y1="12" x2="22" y2="12"/>
+                        </svg>
+                      </button>
+                      {index >= 2 && (
+                        <button className="remove-btn" onClick={() => removeDepartureInput(index)}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                    {suggestions[index] && suggestions[index].length > 0 && (
+                      <ul className="suggestions-list">
+                        {suggestions[index].map((s, i) => (
+                          <li key={i} onClick={() => handleSelectSuggestion(s.placeName, index)}>
+                            {s.placeName}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+                <div className="search-actions">
+                  {departures.length < 4 && (
+                    <button className="add-btn" onClick={addDepartureInput}>
+                      + 출발지 추가
+                    </button>
+                  )}
+                  <button className="search-btn" onClick={handleStart}>
+                    중간지점 찾기
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="search-form">
+                <div className="input-group">
+                  <div className="input-wrapper">
+                    <input
+                      type="text"
+                      className="search-input"
+                      placeholder="출발지 입력"
+                      value={departure}
+                      onChange={(e) => handleSingleDepartureChange(e.target.value)}
+                    />
+                    <button
+                      className="location-btn"
+                      onClick={() => handleGetCurrentLocation()}
+                      title="현재 위치"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <circle cx="12" cy="12" r="3"/>
+                        <line x1="12" y1="2" x2="12" y2="6"/>
+                        <line x1="12" y1="18" x2="12" y2="22"/>
+                        <line x1="2" y1="12" x2="6" y2="12"/>
+                        <line x1="18" y1="12" x2="22" y2="12"/>
+                      </svg>
+                    </button>
+                  </div>
+                  {suggestions.single && suggestions.single.length > 0 && (
+                    <ul className="suggestions-list">
+                      {suggestions.single.map((s, i) => (
+                        <li key={i} onClick={() => handleSelectSuggestion(s.placeName)}>
+                          {s.placeName}
+                        </li>
                       ))}
                     </ul>
                   )}
                 </div>
-              ))}
-              <div className="button-row spaced">
-                <button className="action-btn" onClick={handleStart}>시작</button>
-                {departures.length < 4 && <button className="action-btn" onClick={addDepartureInput}>출발지 추가</button>}
-                <button className="action-btn" onClick={() => setMode('route')}>되돌리기</button>
-              </div>
-            </div>
-          ) : (
-            <div className="input-vertical">
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  className="input-box with-button"
-                  placeholder="출발지 입력"
-                  value={departure}
-                  onChange={(e) => handleSingleDepartureChange(e.target.value)}
-                />
-                <button className="compass-btn" onClick={() => handleGetCurrentLocation()}>🧭</button>
-                {suggestions.single && suggestions.single.length > 0 && (
-                  <ul className="dropdown">
-                    {suggestions.single.map((s, i) => (
-                      <li key={i} onClick={() => handleSelectSuggestion(s.placeName)}>{s.placeName}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  className="input-box with-button"
-                  placeholder="도착지 입력"
-                  value={destination}
-                  onChange={(e) => {
-                    setDestination(e.target.value);
-                    setFocusedInput('destination');
-                    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-                    timeoutRef.current = setTimeout(() => fetchSuggestions(e.target.value, 'destination'), 300);
-                  }}
-                />
-                <button className="compass-btn" onClick={() => handleGetCurrentLocation(null, true)}>🧭</button>
-                {suggestions.destination && suggestions.destination.length > 0 && (
-                  <ul className="dropdown">
-                    {suggestions.destination.map((s, i) => (
-                      <li key={i} onClick={() => {
-                        setDestination(s.placeName);
-                        setSuggestions((prev) => ({ ...prev, destination: [] }));
-                      }}>{s.placeName}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <div className="button-row spaced">
-                <button className="action-btn" onClick={handleStart}>시작</button>
-                <button className="action-btn" onClick={() => setMode('midpoint')}>중간지점 찾기</button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="dots">
-          {images.map((_, idx) => (
-            <span
-              key={idx}
-              className={`dot ${idx === currentImage ? 'active' : ''}`}
-              onClick={() => setCurrentImage(idx)}
-            />
-          ))}
-        </div>
-      </section>
-
-      <section className="recommend-section">
-        <div className="recommend-left">
-          <h2>#오늘의 추천</h2>
-          <div className="card-row">
-            {topPosts.map((post) => (
-              <div
-                key={post.id}
-                className="recommend-card"
-                onClick={() => navigate(`/board?postId=${post.id}`)}
-                style={{ cursor: 'pointer' }}
-              >
-                <img src={`/images/${post.image}`} alt={post.title} className="card-image" />
-                <div className="card-content">
-                  <h3>{post.title}</h3>
-                  <p>{post.description}</p>
+                <div className="input-group">
+                  <div className="input-wrapper">
+                    <input
+                      type="text"
+                      className="search-input"
+                      placeholder="도착지 입력"
+                      value={destination}
+                      onChange={(e) => {
+                        setDestination(e.target.value);
+                        setFocusedInput('destination');
+                        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                        timeoutRef.current = setTimeout(() => fetchSuggestions(e.target.value, 'destination'), 300);
+                      }}
+                    />
+                    <button
+                      className="location-btn"
+                      onClick={() => handleGetCurrentLocation(null, true)}
+                      title="현재 위치"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <circle cx="12" cy="12" r="3"/>
+                        <line x1="12" y1="2" x2="12" y2="6"/>
+                        <line x1="12" y1="18" x2="12" y2="22"/>
+                        <line x1="2" y1="12" x2="6" y2="12"/>
+                        <line x1="18" y1="12" x2="22" y2="12"/>
+                      </svg>
+                    </button>
+                  </div>
+                  {suggestions.destination && suggestions.destination.length > 0 && (
+                    <ul className="suggestions-list">
+                      {suggestions.destination.map((s, i) => (
+                        <li key={i} onClick={() => {
+                          setDestination(s.placeName);
+                          setSuggestions((prev) => ({ ...prev, destination: [] }));
+                        }}>
+                          {s.placeName}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
+                <button className="search-btn" onClick={handleStart}>
+                  경로 찾기
+                </button>
               </div>
+            )}
+          </div>
+
+          {/* Slider Dots */}
+          <div className="hero-dots">
+            {images.map((_, idx) => (
+              <button
+                key={idx}
+                className={`dot ${idx === currentImage ? 'active' : ''}`}
+                onClick={() => setCurrentImage(idx)}
+                aria-label={`슬라이드 ${idx + 1}`}
+              />
             ))}
           </div>
         </div>
+      </section>
 
-        <div className="recommend-right">
-          <h2>#랜덤 장소 추천</h2>
-          <div className="card-grid">
-            <div
-              className="recommend-card big-card"
-              onClick={handleRandomPlaceClick}  // ✅ 클릭 이벤트 연결
-              style={{
-                backgroundImage: `url(${placeBackgrounds[randomPlace] || ''})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                position: 'relative',
-                overflow: 'hidden',
-                cursor: 'pointer'  // UX 향상: 커서 포인터
-              }}
-            >
-              <div className="overlay"></div>
-              <div className="card-content">
-                <h3>{randomPlace}</h3>
-                <button
-                  className="action-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();  // ✅ 카드 클릭과 버튼 클릭 분리
-                    setRandomPlace(randomPlaces[Math.floor(Math.random() * randomPlaces.length)]);
-                  }}
-                >
-                  다시 추천받기
-                </button>
+      {/* Recommendations Section */}
+      <section className="recommendations-section">
+        <div className="container">
+          <div className="recommendations-grid">
+            {/* Today's Recommendations */}
+            <div className="recommendation-block">
+              <h2 className="section-title">
+                <span className="title-icon">#</span>
+                오늘의 추천
+              </h2>
+              <div className="cards-row">
+                {topPosts.map((post) => (
+                  <article
+                    key={post.id}
+                    className="recommendation-card"
+                    onClick={() => navigate(`/board?postId=${post.id}`)}
+                  >
+                    <div className="card-image">
+                      <img src={`/images/${post.image}`} alt={post.title} />
+                    </div>
+                    <div className="card-body">
+                      <h3 className="card-title">{post.title}</h3>
+                      <p className="card-description">{post.description}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            {/* Random Place */}
+            <div className="recommendation-block random-block">
+              <h2 className="section-title">
+                <span className="title-icon">#</span>
+                랜덤 장소 추천
+              </h2>
+              <div
+                className="random-place-card"
+                onClick={handleRandomPlaceClick}
+                style={{
+                  backgroundImage: `url(${placeBackgrounds[randomPlace] || ''})`
+                }}
+              >
+                <div className="random-place-overlay" />
+                <div className="random-place-content">
+                  <h3 className="random-place-name">{randomPlace}</h3>
+                  <button
+                    className="refresh-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setRandomPlace(randomPlaces[Math.floor(Math.random() * randomPlaces.length)]);
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M23 4v6h-6"/>
+                      <path d="M1 20v-6h6"/>
+                      <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                    </svg>
+                    다시 추천받기
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
       </section>
     </div>
   );

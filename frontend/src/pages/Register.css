@@ -1,77 +1,49 @@
-.register-container {
-  max-width: 400px;
-  margin: 100px auto;
-  padding: 2rem;
-  background-color: #c3b2b2;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+/* Register Page - Uses Login.css base styles */
+/* Import Login styles since they share the same auth page design */
+
+/* Register-specific overrides */
+.register-wrapper {
+  padding: var(--space-8) var(--space-12);
 }
 
-.register-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.register-wrapper .auth-form {
+  max-width: 480px;
 }
 
-.register-form h2 {
-  margin-bottom: 1rem;
-  text-align: left;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
 }
 
-.register-form label {
-  font-weight: bold;
+.form-input.error {
+  border-color: var(--color-error);
 }
 
-.register-form input {
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+.form-input.error:focus {
+  box-shadow: 0 0 0 3px var(--color-error-light);
 }
 
-.register-form button {
-  padding: 0.75rem;
-  font-size: 1rem;
-  background-color: #2c7a7b;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+.field-error {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
 }
 
-.register-link {
-  text-align: center;
-  margin-top: 1rem;
-  color: #2c7a7b;
-  cursor: pointer;
-  font-weight: 500;
+/* Responsive */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .register-wrapper {
+    padding: var(--space-6);
+  }
 }
 
-/* 👁 토글 아이콘이 있는 입력창 정렬을 위한 고정 스타일 */
-.input-with-toggle {
-  position: relative;
-  width: 100%;
-}
-
-.input-with-toggle input {
-  width: 100%;
-  height: 35px; /* ✅ 높이 고정 (다른 input과 맞춤) */
-  padding: 0 2.5rem 0 0.75rem; /* ✅ 오른쪽 공간 확보 */
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
-
-
-.error {
-  color: red;
-  font-size: 0.85rem;
-  margin-top: -0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-/* 기존 스타일 아래에 추가 */
+/* Hide browser's built-in password reveal */
 input::-ms-reveal,
 input::-ms-clear,
 input[type="password"]::-webkit-credentials-auto-fill-button,

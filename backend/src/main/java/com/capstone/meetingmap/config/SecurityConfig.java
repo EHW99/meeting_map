@@ -58,6 +58,7 @@ public class  SecurityConfig {
 
                                 config.setAllowedOrigins(Arrays.asList(
                                         "http://localhost:3000",             // 로컬 개발용
+                                        "http://localhost:3001",             // 로컬 개발용 (대체 포트)
                                         "https://meeting-map.kro.kr"        // 실제 배포 도메인
                                 ));
                                 config.setAllowedMethods(Collections.singletonList("*"));

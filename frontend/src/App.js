@@ -1,8 +1,6 @@
-// 📁 src/App.js
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
-import Header from './pages/Header'; // ✅ 추가
+import Header from './pages/Header';
 import Home from './pages/Home';
 import Group from './pages/Group';
 import Board from './pages/Board';
@@ -21,36 +19,37 @@ import MobileBottomNav from './components/MobileBottomNav';
 import useIsMobile from './utils/useIsMobile';
 
 function AppContent() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
   const isMobile = useIsMobile();
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  // 로그인/회원가입 페이지가 아닐 때만 Header 표시
+  // Login/Register pages don't show Header
   const showHeader = location.pathname !== '/login' && location.pathname !== '/register';
+  // Map page needs special layout
+  const isMapPage = location.pathname === '/map';
 
   return (
-    <div className="App">
+    <div className="app">
       <AppProvider>
+        {showHeader && <Header />}
 
-      {showHeader && <Header toggleSidebar={toggleSidebar} />}
-      {!isMobile && <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />} {/* ✅ PC만 */}
+        <main className={`main-content ${!showHeader ? 'no-header' : ''} ${isMapPage ? 'map-page' : ''}`}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/group" element={<Group />} />
+            <Route path="/board" element={<Board />} />
+            <Route path="/schedule" element={<Schedule />} />
+            <Route path="/mypage" element={<Mypage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/map" element={<Map />} />
+            <Route path="/auth/kakao/callback" element={<KakaoLogin />} />
+            <Route path="/write" element={<PostWrite />} />
+            <Route path="/boards/:boardNo" element={<PostDetail />} />
+            <Route path="/edit/:boardNo" element={<PostUpdate />} />
+          </Routes>
+        </main>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/group" element={<Group />} />
-        <Route path="/board" element={<Board />} />
-        <Route path="/schedule" element={<Schedule />} />
-        <Route path="/mypage" element={<Mypage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/map" element={<Map />} />
-        <Route path="/auth/kakao/callback" element={<KakaoLogin />} />
-        <Route path="/write" element={<PostWrite />} /> {/* 게시글 작성 페이지 */}
-        <Route path="/boards/:boardNo" element={<PostDetail />} /> {/* 라우트 설정 */}
-        <Route path="/edit/:boardNo" element={<PostUpdate />} />
-      </Routes>
-      {isMobile && <MobileBottomNav />} {/* ✅ 모바일에서만 표시 */}
+        {isMobile && showHeader && <MobileBottomNav />}
       </AppProvider>
     </div>
   );

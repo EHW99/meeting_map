@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAppContext } from '../AppContext'; // AppContext import
+import { useAppContext } from '../AppContext';
+import { API_BASE_URL } from '../constants';
 import './PostUpdate.css';
-
-const API_BASE = 'http://localhost:8080/api';
 
 const PostUpdate = () => {
   const { boardNo } = useParams();
@@ -20,7 +19,7 @@ const PostUpdate = () => {
 
   const fetchPostDetail = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/boards/${boardNo}`);
+      const res = await axios.get(`${API_BASE_URL}/boards/${boardNo}`);
       const { boardTitle, boardDescription, boardContent, categoryNo } = res.data;
       setBoardTitle(boardTitle);
       setBoardDescription(boardDescription);
@@ -68,7 +67,7 @@ const PostUpdate = () => {
 
     // 폼 데이터를 서버로 보내기
     try {
-      await axios.put(`${API_BASE}/boards/${boardNo}`, formData, {
+      await axios.put(`${API_BASE_URL}/boards/${boardNo}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data", // 반드시 multipart/form-data로 설정
         },

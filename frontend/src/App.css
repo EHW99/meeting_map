@@ -1,14 +1,50 @@
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
+/* App Layout */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.App {
-  overflow-x: hidden;
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  padding-top: var(--header-height);
+  min-height: 100vh;
 }
 
-@media (max-width: 768px) {
-  .App {
-    padding-bottom: 70px; /* 하단 메뉴 높이 + 여유 */
+.main-content.no-header {
+  padding-top: 0;
+}
+
+.main-content.map-page {
+  padding-top: var(--header-height);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Mobile bottom nav spacing */
+@media (max-width: 767px) {
+  .main-content {
+    padding-bottom: 70px;
+  }
+
+  .main-content.map-page {
+    padding-bottom: 0;
+  }
+}
+
+/* Page transitions */
+.main-content > * {
+  animation: fadeIn var(--transition-base);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

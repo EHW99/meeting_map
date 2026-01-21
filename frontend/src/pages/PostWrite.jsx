@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAppContext } from '../AppContext';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../constants';
 import './PostWrite.css';
-
-const API_BASE = 'http://localhost:8080/api';
 
 const PostWrite = () => {
   const { user } = useAppContext();
@@ -51,7 +50,7 @@ const PostWrite = () => {
 
     // 폼 데이터를 서버로 보내기
     try {
-      await axios.post(`${API_BASE}/boards`, formData, {
+      await axios.post(`${API_BASE_URL}/boards`, formData, {
         headers: {
           "Content-Type": "multipart/form-data", // 반드시 multipart/form-data로 설정
         },

@@ -43,7 +43,7 @@ public class TourApiService {
             Function<T, CodeResponseDto> mapper
     ) {
         CommonTourApiResponse<T> response = fetchFromApi(
-                "/areaCode1",
+                "/areaCode2",
                 responseType,
                 builder -> {
                     builder.queryParam("numOfRows", 40)
@@ -66,7 +66,7 @@ public class TourApiService {
             String category
     ) {
         CommonTourApiResponse<T> response = fetchFromApi(
-                "/locationBasedList1",
+                "/locationBasedList2",
                 responseType,
                 builder -> {
                     builder.queryParam("numOfRows", count)
@@ -111,7 +111,7 @@ public class TourApiService {
     //  TourAPI로 얻은 장소 상세 조회
     public DetailCommonItem getTourApiPlaceDetail(String contentId) {
         CommonTourApiResponse<DetailCommonItem> response = fetchFromApi(
-                "/detailCommon1",
+                "/detailCommon2",
                 new ParameterizedTypeReference<>() {},
                 builder -> builder.queryParam("numOfRows", 10)
                         .queryParam("pageNo", 1)
@@ -134,7 +134,7 @@ public class TourApiService {
     //  TourAPI로 얻은 장소 이미지 조회
     public List<DetailImageItem> getTourApiPlaceDetailImage(String contentId) {
         CommonTourApiResponse<DetailImageItem> response = fetchFromApi(
-                "/detailImage1",
+                "/detailImage2",
                 new ParameterizedTypeReference<>() {},
                 builder -> builder.queryParam("numOfRows", 10)
                         .queryParam("pageNo", 1)
