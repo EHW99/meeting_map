@@ -205,7 +205,7 @@ private List<PlaceResponseDto> getFallbackRecommendations(...) {
 1. ~~**Kakao Map SDK 로딩 무한 폴링**~~ - ✅ 해결됨
 2. ~~**API 에러 시 사용자 피드백 없음**~~ - ✅ 해결됨
 3. ~~**자동완성 캐싱 없음**~~ - ✅ 해결됨 (useAutocomplete 훅)
-4. **중복 코드** - Map.jsx와 Schedule.jsx 간 경로 그리기 로직
+4. ~~**중복 코드**~~ - ✅ 해결됨 (useKakaoMap, useRouteSelection 훅)
 
 #### 미활용 기능
 - Kakao Map 카테고리 검색
@@ -260,6 +260,41 @@ clearSuggestions('inputKey');
 
 ---
 
+### 10. 중복 코드 리팩토링 ✅
+
+#### 문제점
+- Map.jsx와 Schedule.jsx에서 동일한 Kakao Map 초기화 로직 중복
+- 타임아웃 처리, 폴링 로직이 양쪽에 copy-paste 되어 있음
+- 경로 선택/폴리라인 그리기 로직도 유사하게 중복
+
+#### 해결
+| 새 파일 | 역할 |
+|---------|------|
+| `useKakaoMap.js` | Kakao Map SDK 로딩 대기 + 초기화 |
+| `useRouteSelection.js` | 경로 선택, 폴리라인/마커 그리기 |
+
+```javascript
+// useKakaoMap 사용 예시
+const { mapObj, mapLoadError } = useKakaoMap('map-container-id');
+
+// useRouteSelection 사용 예시
+const { polylines, handleRouteClick, clearRouteDisplay } = useRouteSelection(mapObj);
+```
+
+#### 개선 효과
+- Map.jsx: ~25줄 감소 (맵 초기화 로직 제거)
+- Schedule.jsx: ~25줄 감소 (맵 초기화 로직 제거)
+- 코드 재사용성 향상
+- 단일 책임 원칙 적용
+
+#### 수정된 파일
+- `frontend/src/hooks/useKakaoMap.js`: 새로 생성
+- `frontend/src/hooks/useRouteSelection.js`: 새로 생성
+- `frontend/src/pages/Map.jsx`: 훅 적용
+- `frontend/src/pages/Schedule.jsx`: 훅 적용
+
+---
+
 ## 다음 작업 예정
 
 ### 완료된 작업 ✅
@@ -268,12 +303,12 @@ clearSuggestions('inputKey');
 - [x] 에러 처리 및 사용자 피드백 강화 (Map, Schedule)
 - [x] 대중교통 경로 시각화 개선
 - [x] 자동완성 캐싱 추가
+- [x] 중복 코드 리팩토링 (공통 Hook 추출)
 
 ### 중간 우선순위
 - [ ] Kakao Map 추가 기능 활용
 
 ### 낮은 우선순위
-- [ ] 중복 코드 리팩토링 (공통 Hook 추출)
 - [ ] Swagger/OpenAPI 문서화
 - [ ] 테스트 코드 작성
 

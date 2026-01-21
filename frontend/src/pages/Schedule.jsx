@@ -7,6 +7,7 @@ import { drawPolyline, drawTransitPlan, clearPolylines } from '../components/Rou
 import { categoryList, categoryDetailCodes } from './Map';
 import { API_BASE_URL } from '../constants.js';
 import { useAppContext } from '../AppContext';
+import useKakaoMap from '../hooks/useKakaoMap';
 
 const STEPS = [
   { id: 1, name: '장소 선택', icon: '📍' },
@@ -19,8 +20,10 @@ const Schedule = () => {
   const { user } = useAppContext();
   const location = useLocation();
 
+  // Kakao Map 초기화 (공통 훅 사용)
+  const { mapObj, mapLoadError } = useKakaoMap('schedule-map');
+
   const [currentStep, setCurrentStep] = useState(1);
-  const [mapObj, setMapObj] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [selectedCategoryPlaces, setSelectedCategoryPlaces] = useState([]);
@@ -53,7 +56,6 @@ const Schedule = () => {
   const [showRoutePanel, setShowRoutePanel] = useState(false);
 
   // Loading and error states
-  const [mapLoadError, setMapLoadError] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
 
   // Auth check
@@ -70,31 +72,6 @@ const Schedule = () => {
       return () => clearTimeout(timer);
     }
   }, [createScheduleError]);
-
-  // Initialize map (wait for Kakao SDK to load with timeout)
-  useEffect(() => {
-    let attempts = 0;
-    const maxAttempts = 50; // 5초 타임아웃
-
-    const interval = setInterval(() => {
-      attempts++;
-      if (window.kakao && window.kakao.maps) {
-        clearInterval(interval);
-        const container = document.getElementById('schedule-map');
-        if (!container) return;
-        const map = new window.kakao.maps.Map(container, {
-          center: new window.kakao.maps.LatLng(37.554722, 126.970833),
-          level: 5,
-        });
-        setMapObj(map);
-      } else if (attempts >= maxAttempts) {
-        clearInterval(interval);
-        setMapLoadError(true);
-      }
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, []);
 
   // Center map on items
   useEffect(() => {

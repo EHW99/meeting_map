@@ -6,6 +6,7 @@ import RouteSummary from '../components/RouteSummary';
 import { drawPolyline, drawTransitPlan, clearPolylines } from '../components/RouteDrawer';
 import { API_BASE_URL } from '../constants.js';
 import useAutocomplete from '../hooks/useAutocomplete';
+import useKakaoMap from '../hooks/useKakaoMap';
 
 export const categoryList = [
   { code: 'tour', name: '관광지', icon: '🏛️' },
@@ -31,7 +32,9 @@ const Map = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [mapObj, setMapObj] = useState(null);
+  // Kakao Map 초기화 (공통 훅 사용)
+  const { mapObj, mapLoadError } = useKakaoMap('map');
+
   const [departure, setDeparture] = useState(null);
   const [destination, setDestination] = useState(null);
   const [transportMode, setTransportMode] = useState('car');
@@ -55,7 +58,6 @@ const Map = () => {
   // Loading and error states
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [mapLoadError, setMapLoadError] = useState(false);
 
   // Search panel states
   const [searchMode, setSearchMode] = useState('route'); // 'route' or 'midpoint'
@@ -155,30 +157,12 @@ const Map = () => {
     }
   };
 
-  // 카카오 맵 객체 초기화 (타임아웃 포함)
+  // 맵 로드 에러 시 에러 메시지 설정
   useEffect(() => {
-    let attempts = 0;
-    const maxAttempts = 50; // 5초 타임아웃
-
-    const interval = setInterval(() => {
-      attempts++;
-      if (window.kakao && window.kakao.maps) {
-        clearInterval(interval);
-        const container = document.getElementById('map');
-        const map = new window.kakao.maps.Map(container, {
-          center: new window.kakao.maps.LatLng(37.554722, 126.970833),
-          level: 5,
-        });
-        setMapObj(map);
-      } else if (attempts >= maxAttempts) {
-        clearInterval(interval);
-        setMapLoadError(true);
-        setError('지도를 불러오는데 실패했습니다. 페이지를 새로고침 해주세요.');
-      }
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, []);
+    if (mapLoadError) {
+      setError('지도를 불러오는데 실패했습니다. 페이지를 새로고침 해주세요.');
+    }
+  }, [mapLoadError]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
