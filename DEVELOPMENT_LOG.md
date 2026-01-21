@@ -105,18 +105,71 @@
 
 ---
 
+### 6. OpenAI API 응답 안정화 ✅
+
+#### 문제점
+- AI 응답이 예상과 다른 형식으로 오면 파싱 실패
+- 쉼표 구분자만 가정하여 다양한 응답 형식 처리 불가
+- AI 추천 실패 시 전체 일정 생성이 실패
+
+#### 해결
+```java
+// 다중 형식 파싱 지원
+private List<String> parseAIResponse(String aiResult) {
+    // 1. JSON 배열: ["장소A", "장소B"]
+    // 2. JSON 객체: {"places": [...]}
+    // 3. 번호 목록: "1. 장소A\n2. 장소B"
+    // 4. 대시 목록: "- 장소A\n- 장소B"
+    // 5. 쉼표 구분: "장소A, 장소B"
+    // 6. 줄바꿈 구분
+}
+
+// 평점 기반 fallback 추가
+private List<PlaceResponseDto> getFallbackRecommendations(...) {
+    // AI 실패 시 평점 순으로 추천
+}
+```
+
+#### 수정된 파일
+- `backend/.../api/openai/service/OpenAIService.java`: 다중 형식 파싱 + fallback 로직
+
+---
+
+### 7. 프론트엔드 에러 처리 강화 ✅
+
+#### 문제점
+- Kakao Map SDK 로딩 시 무한 폴링 (타임아웃 없음)
+- API 에러 시 console.error만 출력, 사용자 피드백 없음
+- 네트워크 오류 시 앱이 멈춘 것처럼 보임
+
+#### 해결
+| 개선 항목 | 구현 내용 |
+|----------|----------|
+| 지도 로딩 타임아웃 | 5초 후 에러 플레이스홀더 표시 |
+| 로딩 오버레이 | 검색/일정생성 중 스피너 표시 |
+| 에러 배너 | 상단에 에러 메시지 + 닫기 버튼 |
+| 에러 유형 분류 | 타임아웃, 400, 500 등 상황별 메시지 |
+
+#### 수정된 파일
+- `frontend/src/pages/Map.jsx`: 로딩/에러 상태 + UI 컴포넌트
+- `frontend/src/pages/Map.css`: 로딩 오버레이, 에러 배너 스타일
+- `frontend/src/pages/Schedule.jsx`: 글로벌 에러 배너, 로딩 상태
+- `frontend/src/pages/Schedule.css`: 에러/로딩 UI 스타일
+
+---
+
 ## 코드 품질 분석 결과
 
 ### 발견된 문제점 (향후 개선 예정)
 
 #### 백엔드
-1. **OpenAI API 응답 파싱 불안정** - 쉼표 구분자 가정
-2. **AI 추천 실패 시 fallback 없음** - 전체 일정 생성 실패
+1. ~~**OpenAI API 응답 파싱 불안정**~~ - ✅ 해결됨
+2. ~~**AI 추천 실패 시 fallback 없음**~~ - ✅ 해결됨
 3. **Tour API 응답 파싱 복잡** - 빈 문자열/배열 혼재
 
 #### 프론트엔드
-1. **Kakao Map SDK 로딩 무한 폴링** - 타임아웃 없음
-2. **API 에러 시 사용자 피드백 없음** - console.error만 출력
+1. ~~**Kakao Map SDK 로딩 무한 폴링**~~ - ✅ 해결됨
+2. ~~**API 에러 시 사용자 피드백 없음**~~ - ✅ 해결됨
 3. **자동완성 캐싱 없음** - 중복 API 호출
 4. **중복 코드** - Map.jsx와 Schedule.jsx 간 경로 그리기 로직
 
@@ -142,10 +195,10 @@
 
 ## 다음 작업 예정
 
-### 높은 우선순위
+### 완료된 작업 ✅
 - [x] 보안 이슈 수정 완료
-- [ ] OpenAI API 응답 안정화 (JSON 형식 요청)
-- [ ] 에러 처리 및 사용자 피드백 강화
+- [x] OpenAI API 응답 안정화 (다중 형식 파싱 + fallback)
+- [x] 에러 처리 및 사용자 피드백 강화 (Map, Schedule)
 
 ### 중간 우선순위
 - [ ] 대중교통 경로 시각화 개선

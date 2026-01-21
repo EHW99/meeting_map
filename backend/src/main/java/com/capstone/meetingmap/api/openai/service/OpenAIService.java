@@ -4,59 +4,229 @@ import com.capstone.meetingmap.api.openai.dto.ChatCompletionResponse;
 import com.capstone.meetingmap.map.dto.PlaceResponseDto;
 import com.capstone.meetingmap.schedule.dto.ScheduleCreateRequestDto;
 import com.capstone.meetingmap.schedule.dto.SelectedPlace;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class OpenAIService {
+    private static final Logger log = LoggerFactory.getLogger(OpenAIService.class);
+    private static final String MODEL = "gpt-4o-mini";
+    private static final int MAX_TOKENS = 1000;
+
     private final RestClient openAiRestClient;
+    private final ObjectMapper objectMapper;
 
     public OpenAIService(RestClient openAiRestClient) {
         this.openAiRestClient = openAiRestClient;
+        this.objectMapper = new ObjectMapper();
     }
 
     public String getChatCompletion(String prompt) {
         Map<String, Object> requestBody = Map.of(
-                "model", "gpt-4o-mini",
+                "model", MODEL,
                 "messages", List.of(Map.of(
                         "role", "user",
                         "content", prompt
                 )),
-                "max_tokens", 500
+                "max_tokens", MAX_TOKENS
         );
 
-        ChatCompletionResponse response = openAiRestClient.post()
-                .uri("/v1/chat/completions")
-                .body(requestBody)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+        try {
+            ChatCompletionResponse response = openAiRestClient.post()
+                    .uri("/v1/chat/completions")
+                    .body(requestBody)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                        log.error("OpenAI API 클라이언트 오류: {}", res.getStatusCode());
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "AI 추천 요청 오류");
+                    })
+                    .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                        log.error("OpenAI API 서버 오류: {}", res.getStatusCode());
+                        throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "AI 서비스를 일시적으로 사용할 수 없습니다");
+                    })
+                    .body(new ParameterizedTypeReference<>() {});
 
-        if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
-            throw new RuntimeException("OpenAI API에서 결과를 찾을 수 없습니다.");
+            if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
+                log.warn("OpenAI API 응답이 비어있습니다");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "AI 응답을 받지 못했습니다");
+            }
+
+            return response.getChoices().get(0).getMessage().getContent();
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("OpenAI API 호출 실패", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "AI 추천 중 오류가 발생했습니다");
         }
-
-        return response.getChoices().get(0).getMessage().getContent();
     }
 
     public List<PlaceResponseDto> getRecommendedPlaces(ScheduleCreateRequestDto dto, List<PlaceResponseDto> placeList, String themeDescription) {
-        String prompt = buildPrompt(dto, placeList, themeDescription);
-        String aiResult = getChatCompletion(prompt);
+        int recommendCount = dto.getTotalPlaceCount() - dto.getSelectedPlace().size();
 
-        // 장소 이름 파싱
-        List<String> recommendedNames = Arrays.stream(aiResult.split(","))
+        try {
+            String prompt = buildPrompt(dto, placeList, themeDescription);
+            String aiResult = getChatCompletion(prompt);
+            log.debug("AI 응답: {}", aiResult);
+
+            // JSON 또는 다양한 형식 파싱 시도
+            List<String> recommendedNames = parseAIResponse(aiResult);
+            log.info("AI가 추천한 장소: {}", recommendedNames);
+
+            // 이름 기준으로 placeList에서 찾아서 반환
+            List<PlaceResponseDto> recommended = placeList.stream()
+                    .filter(place -> recommendedNames.stream()
+                            .anyMatch(name -> name.equalsIgnoreCase(place.getName()) ||
+                                    place.getName().contains(name) ||
+                                    name.contains(place.getName())))
+                    .collect(Collectors.toList());
+
+            // AI 추천 결과가 부족하면 평점 기반으로 추가
+            if (recommended.size() < recommendCount) {
+                log.info("AI 추천 결과 부족 ({}/{}), 평점 기반으로 보충", recommended.size(), recommendCount);
+                recommended = supplementWithRatingBased(recommended, placeList, dto, recommendCount);
+            }
+
+            return recommended;
+
+        } catch (Exception e) {
+            log.warn("AI 추천 실패, 평점 기반 fallback 사용: {}", e.getMessage());
+            return getFallbackRecommendations(placeList, dto, recommendCount);
+        }
+    }
+
+    /**
+     * AI 응답을 다양한 형식으로 파싱 시도
+     */
+    private List<String> parseAIResponse(String aiResult) {
+        List<String> names = new ArrayList<>();
+
+        // 1. JSON 배열 형식 시도: ["장소A", "장소B"]
+        try {
+            JsonNode jsonNode = objectMapper.readTree(aiResult);
+            if (jsonNode.isArray()) {
+                for (JsonNode node : jsonNode) {
+                    names.add(node.asText().trim());
+                }
+                if (!names.isEmpty()) return names;
+            }
+        } catch (JsonProcessingException ignored) {
+            // JSON 파싱 실패, 다른 형식 시도
+        }
+
+        // 2. JSON 객체에서 places/recommendations 키 찾기
+        try {
+            JsonNode jsonNode = objectMapper.readTree(aiResult);
+            JsonNode placesNode = jsonNode.has("places") ? jsonNode.get("places") :
+                    jsonNode.has("recommendations") ? jsonNode.get("recommendations") : null;
+            if (placesNode != null && placesNode.isArray()) {
+                for (JsonNode node : placesNode) {
+                    if (node.isTextual()) {
+                        names.add(node.asText().trim());
+                    } else if (node.has("name")) {
+                        names.add(node.get("name").asText().trim());
+                    }
+                }
+                if (!names.isEmpty()) return names;
+            }
+        } catch (JsonProcessingException ignored) {
+        }
+
+        // 3. 번호 목록 형식: "1. 장소A\n2. 장소B"
+        Pattern numberedPattern = Pattern.compile("^\\d+\\.\\s*(.+)$", Pattern.MULTILINE);
+        Matcher numberedMatcher = numberedPattern.matcher(aiResult);
+        while (numberedMatcher.find()) {
+            names.add(numberedMatcher.group(1).trim());
+        }
+        if (!names.isEmpty()) return names;
+
+        // 4. 대시 목록 형식: "- 장소A\n- 장소B"
+        Pattern dashPattern = Pattern.compile("^[-•]\\s*(.+)$", Pattern.MULTILINE);
+        Matcher dashMatcher = dashPattern.matcher(aiResult);
+        while (dashMatcher.find()) {
+            names.add(dashMatcher.group(1).trim());
+        }
+        if (!names.isEmpty()) return names;
+
+        // 5. 쉼표 구분: "장소A, 장소B, 장소C"
+        if (aiResult.contains(",")) {
+            names = Arrays.stream(aiResult.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty() && !s.matches("^\\d+$"))
+                    .collect(Collectors.toList());
+            if (!names.isEmpty()) return names;
+        }
+
+        // 6. 줄바꿈 구분
+        names = Arrays.stream(aiResult.split("\n"))
                 .map(String::trim)
-                .filter(s -> !s.isEmpty())
+                .filter(s -> !s.isEmpty() && s.length() > 1 && !s.matches("^\\d+$"))
+                .collect(Collectors.toList());
+
+        return names;
+    }
+
+    /**
+     * AI 추천 결과가 부족할 때 평점 기반으로 보충
+     */
+    private List<PlaceResponseDto> supplementWithRatingBased(
+            List<PlaceResponseDto> current,
+            List<PlaceResponseDto> placeList,
+            ScheduleCreateRequestDto dto,
+            int targetCount) {
+
+        Set<String> existingNames = current.stream()
+                .map(PlaceResponseDto::getName)
+                .collect(Collectors.toSet());
+
+        Set<String> selectedNames = dto.getSelectedPlace().stream()
+                .map(SelectedPlace::getName)
+                .collect(Collectors.toSet());
+
+        List<PlaceResponseDto> additional = placeList.stream()
+                .filter(p -> !existingNames.contains(p.getName()))
+                .filter(p -> !selectedNames.contains(p.getName()))
+                .sorted(Comparator.comparing(PlaceResponseDto::getRating,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .limit(targetCount - current.size())
                 .toList();
 
-        // 이름 기준으로 placeList에서 찾아서 반환
+        List<PlaceResponseDto> result = new ArrayList<>(current);
+        result.addAll(additional);
+        return result;
+    }
+
+    /**
+     * AI 추천 완전 실패 시 평점 기반 fallback
+     */
+    private List<PlaceResponseDto> getFallbackRecommendations(
+            List<PlaceResponseDto> placeList,
+            ScheduleCreateRequestDto dto,
+            int count) {
+
+        Set<String> selectedNames = dto.getSelectedPlace().stream()
+                .map(SelectedPlace::getName)
+                .collect(Collectors.toSet());
+
         return placeList.stream()
-                .filter(place -> recommendedNames.contains(place.getName()))
+                .filter(p -> !selectedNames.contains(p.getName()))
+                .sorted(Comparator.comparing(PlaceResponseDto::getRating,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .limit(count)
                 .toList();
     }
 

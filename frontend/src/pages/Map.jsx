@@ -51,6 +51,11 @@ const Map = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showRoutePanel, setShowRoutePanel] = useState(false);
 
+  // Loading and error states
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [mapLoadError, setMapLoadError] = useState(false);
+
   // Search panel states
   const [searchMode, setSearchMode] = useState('route'); // 'route' or 'midpoint'
   const [searchDeparture, setSearchDeparture] = useState('');
@@ -165,9 +170,13 @@ const Map = () => {
     }
   };
 
-  // 카카오 맵 객체 초기화
+  // 카카오 맵 객체 초기화 (타임아웃 포함)
   useEffect(() => {
+    let attempts = 0;
+    const maxAttempts = 50; // 5초 타임아웃
+
     const interval = setInterval(() => {
+      attempts++;
       if (window.kakao && window.kakao.maps) {
         clearInterval(interval);
         const container = document.getElementById('map');
@@ -176,6 +185,10 @@ const Map = () => {
           level: 5,
         });
         setMapObj(map);
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        setMapLoadError(true);
+        setError('지도를 불러오는데 실패했습니다. 페이지를 새로고침 해주세요.');
       }
     }, 100);
 
@@ -232,9 +245,13 @@ const Map = () => {
       const allPlaces = [];
       const markers = [];
 
+      setIsLoading(true);
+      setError(null);
+
       try {
         const res = await axios.get(
-          `${API_BASE_URL}/map?search=${search}&sort=${sort}${departure ? `&start=${departure}` : ''}${destination ? `&end=${destination}` : ''}${departures.length ? `&${departures.map((d) => `name=${d}`).join('&')}` : ''}`
+          `${API_BASE_URL}/map?search=${search}&sort=${sort}${departure ? `&start=${departure}` : ''}${destination ? `&end=${destination}` : ''}${departures.length ? `&${departures.map((d) => `name=${d}`).join('&')}` : ''}`,
+          { timeout: 30000 } // 30초 타임아웃
         );
 
         const start = res.data?.start || null;
@@ -242,11 +259,17 @@ const Map = () => {
         const middlePoint = res.data?.middlePoint || null;
         const items = res.data?.list || [];
 
+        if (items.length === 0) {
+          setError('검색 결과가 없습니다. 다른 조건으로 검색해보세요.');
+        }
+
         for (const place of items) {
           if (!place.longitude || !place.latitude) continue;
 
           const lat = parseFloat(place.latitude);
           const lng = parseFloat(place.longitude);
+          if (isNaN(lat) || isNaN(lng)) continue;
+
           const marker = new window.kakao.maps.Marker({
             map: mapObj,
             position: new window.kakao.maps.LatLng(lat, lng),
@@ -264,7 +287,18 @@ const Map = () => {
         setShowSidebar(true);
         setShowRoutePanel(true);
       } catch (err) {
-        console.error('❌ 전체 요청 실패:', err);
+        console.error('장소 검색 실패:', err);
+        if (err.code === 'ECONNABORTED') {
+          setError('요청 시간이 초과되었습니다. 다시 시도해주세요.');
+        } else if (err.response?.status === 400) {
+          setError('잘못된 요청입니다. 출발지/도착지를 확인해주세요.');
+        } else if (err.response?.status === 500) {
+          setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        } else {
+          setError('장소 검색 중 오류가 발생했습니다.');
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -785,7 +819,49 @@ const Map = () => {
 
       {/* Map Area */}
       <main className="map-main">
-        <div id="map" className="map-container"></div>
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="map-loading-overlay">
+            <div className="loading-spinner"></div>
+            <p>검색 중...</p>
+          </div>
+        )}
+
+        {/* Error Banner */}
+        {error && !isLoading && (
+          <div className="map-error-banner">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>{error}</span>
+            <button className="error-close-btn" onClick={() => setError(null)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        )}
+
+        {/* Map Container or Error Placeholder */}
+        {mapLoadError ? (
+          <div className="map-error-placeholder">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+              <line x1="2" y1="2" x2="22" y2="22" strokeWidth="2"/>
+            </svg>
+            <h3>지도를 불러올 수 없습니다</h3>
+            <p>페이지를 새로고침 하거나 인터넷 연결을 확인해주세요.</p>
+            <button className="btn-reload" onClick={() => window.location.reload()}>
+              새로고침
+            </button>
+          </div>
+        ) : (
+          <div id="map" className="map-container"></div>
+        )}
 
         {/* Route Panel - Bottom of Map */}
         {showRoutePanel && (start || end) && (

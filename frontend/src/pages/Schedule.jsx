@@ -52,6 +52,10 @@ const Schedule = () => {
   const [transferMarkers, setTransferMarkers] = useState([]);
   const [showRoutePanel, setShowRoutePanel] = useState(false);
 
+  // Loading and error states
+  const [mapLoadError, setMapLoadError] = useState(false);
+  const [categoryLoading, setCategoryLoading] = useState(false);
+
   // Auth check
   useEffect(() => {
     if (user === null) {
@@ -67,9 +71,13 @@ const Schedule = () => {
     }
   }, [createScheduleError]);
 
-  // Initialize map (wait for Kakao SDK to load)
+  // Initialize map (wait for Kakao SDK to load with timeout)
   useEffect(() => {
+    let attempts = 0;
+    const maxAttempts = 50; // 5초 타임아웃
+
     const interval = setInterval(() => {
+      attempts++;
       if (window.kakao && window.kakao.maps) {
         clearInterval(interval);
         const container = document.getElementById('schedule-map');
@@ -79,6 +87,9 @@ const Schedule = () => {
           level: 5,
         });
         setMapObj(map);
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        setMapLoadError(true);
       }
     }, 100);
 
@@ -154,20 +165,32 @@ const Schedule = () => {
 
     // end 좌표가 없으면 API 호출하지 않음
     if (!end || !end.latitude || !end.longitude) {
-      console.warn('위치 정보가 없습니다. Map 페이지에서 경로를 설정해주세요.');
+      setCreateScheduleError('위치 정보가 없습니다. Map 페이지에서 경로를 먼저 설정해주세요.');
       return;
     }
 
+    setCategoryLoading(true);
     const allPlaces = [];
-    for (const detailCode of detailCodes) {
-      try {
-        const res = await axios.get(`${API_BASE_URL}/map?search=location&sort=rating_dsc&latitude=${end.latitude}&longitude=${end.longitude}&category=${detailCode}`);
+
+    try {
+      for (const detailCode of detailCodes) {
+        const res = await axios.get(
+          `${API_BASE_URL}/map?search=location&sort=rating_dsc&latitude=${end.latitude}&longitude=${end.longitude}&category=${detailCode}`,
+          { timeout: 15000 }
+        );
         allPlaces.push(...(res.data?.list || []));
-      } catch (err) {
-        console.error(`카테고리 요청 실패:`, err);
       }
+      setSelectedCategoryPlaces(allPlaces);
+    } catch (err) {
+      console.error('카테고리 요청 실패:', err);
+      if (err.code === 'ECONNABORTED') {
+        setCreateScheduleError('요청 시간이 초과되었습니다. 다시 시도해주세요.');
+      } else {
+        setCreateScheduleError('장소 목록을 불러오는데 실패했습니다.');
+      }
+    } finally {
+      setCategoryLoading(false);
     }
-    setSelectedCategoryPlaces(allPlaces);
   };
 
   const loadRoutes = async () => {
@@ -329,10 +352,45 @@ const Schedule = () => {
         </div>
       </div>
 
+      {/* Global Error Banner */}
+      {createScheduleError && (
+        <div className="schedule-error-banner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span>{createScheduleError}</span>
+          <button className="error-close-btn" onClick={() => setCreateScheduleError('')}>×</button>
+        </div>
+      )}
+
       <div className="schedule-layout">
         {/* Left: Map & Place List */}
         <div className="schedule-map-section">
-          <div id="schedule-map" className="schedule-map"></div>
+          {/* Loading Overlay */}
+          {(createScheduleLoading || categoryLoading) && (
+            <div className="schedule-loading-overlay">
+              <div className="loading-spinner"></div>
+              <p>{createScheduleLoading ? '일정 생성 중...' : '장소 검색 중...'}</p>
+            </div>
+          )}
+
+          {/* Map or Error Placeholder */}
+          {mapLoadError ? (
+            <div className="map-error-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+                <line x1="2" y1="2" x2="22" y2="22" strokeWidth="2"/>
+              </svg>
+              <h3>지도를 불러올 수 없습니다</h3>
+              <p>페이지를 새로고침 해주세요.</p>
+              <button className="btn-reload" onClick={() => window.location.reload()}>새로고침</button>
+            </div>
+          ) : (
+            <div id="schedule-map" className="schedule-map"></div>
+          )}
 
           {/* Location Info Overlay */}
           {scheduleItems.length > 0 && (
@@ -533,8 +591,6 @@ const Schedule = () => {
                 )}
               </div>
 
-              {createScheduleError && <div className="error-message">{createScheduleError}</div>}
-
               <div className="btn-group">
                 <button className="btn-back" onClick={() => setCurrentStep(1)}>이전</button>
                 <button
@@ -596,8 +652,6 @@ const Schedule = () => {
                   🗺️ 경로 보기
                 </button>
               )}
-
-              {createScheduleError && <div className="error-message">{createScheduleError}</div>}
 
               <div className="btn-group">
                 <button className="btn-back" onClick={() => setCurrentStep(2)}>수정하기</button>
