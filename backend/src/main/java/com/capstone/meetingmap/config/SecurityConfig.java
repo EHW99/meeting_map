@@ -61,7 +61,7 @@ public class  SecurityConfig {
                                         "http://localhost:3001",             // 로컬 개발용 (대체 포트)
                                         "https://meeting-map.kro.kr"        // 실제 배포 도메인
                                 ));
-                                config.setAllowedMethods(Collections.singletonList("*"));
+                                config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                                 config.setAllowCredentials(true);
                                 config.setAllowedHeaders(Collections.singletonList("*"));
                                 config.setMaxAge(3600L);

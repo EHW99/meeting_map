@@ -5,8 +5,6 @@ import './Login.css';
 import { useAppContext } from "../AppContext";
 import { API_BASE_URL } from '../constants';
 
-const predefinedUsers = ['user1','user2','user3','user4','user5','user6','user7','user8','user9','user10','admin1','admin2','admin3'];
-
 function Login() {
   const [userId, setUserId] = useState('');
   const [userPasswd, setUserPasswd] = useState('');
@@ -28,12 +26,10 @@ function Login() {
       return;
     }
 
-    const finalPassword = predefinedUsers.includes(userId) ? '123456' : userPasswd;
-
     try {
       const response = await axios.post(
         `${API_BASE_URL}/auth/login`,
-        { userId, userPasswd: finalPassword },
+        { userId, userPasswd },
         {
           withCredentials: true,
           headers: { "Content-Type": "application/json" }

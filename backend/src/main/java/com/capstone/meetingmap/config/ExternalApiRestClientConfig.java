@@ -17,6 +17,9 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 public class ExternalApiRestClientConfig {
@@ -79,15 +82,39 @@ public class ExternalApiRestClientConfig {
                 .build();
     }
 
-    // http 요청을 로깅
+    // 민감한 헤더 목록 (로깅에서 마스킹 처리)
+    private static final List<String> SENSITIVE_HEADERS = Arrays.asList(
+            "authorization", "appkey", "x-api-key", "api-key"
+    );
+
+    // http 요청을 로깅 (민감한 정보 마스킹)
     private ClientHttpRequestInterceptor loggingInterceptor() {
         return (request, body, execution) -> {
-            log.debug("HTTP {} {}", request.getMethod(), request.getURI());
-            log.debug("Request Headers {}", request.getHeaders());
+            // URI에서 API 키 파라미터 마스킹
+            String maskedUri = maskSensitiveQueryParams(request.getURI().toString());
+            log.debug("HTTP {} {}", request.getMethod(), maskedUri);
+
+            // 민감한 헤더 마스킹하여 로깅
+            String maskedHeaders = request.getHeaders().entrySet().stream()
+                    .map(entry -> {
+                        String key = entry.getKey();
+                        if (SENSITIVE_HEADERS.contains(key.toLowerCase())) {
+                            return key + ": [MASKED]";
+                        }
+                        return key + ": " + entry.getValue();
+                    })
+                    .collect(Collectors.joining(", "));
+            log.debug("Request Headers {{{}}}", maskedHeaders);
+
             var response = execution.execute(request, body);
             log.debug("Response {}", response.getStatusCode());
             return response;
         };
+    }
+
+    // URL에서 민감한 쿼리 파라미터 마스킹
+    private String maskSensitiveQueryParams(String uri) {
+        return uri.replaceAll("(serviceKey|key|apiKey)=[^&]+", "$1=[MASKED]");
     }
 
     // http 요청에 쿼리 파라미터 추가
