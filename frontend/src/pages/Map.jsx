@@ -7,6 +7,7 @@ import { drawPolyline, drawTransitPlan, clearPolylines } from '../components/Rou
 import { API_BASE_URL } from '../constants.js';
 import useAutocomplete from '../hooks/useAutocomplete';
 import useKakaoMap from '../hooks/useKakaoMap';
+import useMarkerClusterer from '../hooks/useMarkerClusterer';
 
 export const categoryList = [
   { code: 'tour', name: '관광지', icon: '🏛️' },
@@ -67,6 +68,12 @@ const Map = () => {
 
   // 자동완성 훅 사용 (캐싱 포함)
   const { suggestions, fetchSuggestions, clearSuggestions } = useAutocomplete(300, 5);
+
+  // 마커 클러스터러 훅 사용 (성능 최적화)
+  const { addMarkers: addClusteredMarkers, clearMarkers: clearClusteredMarkers } = useMarkerClusterer(mapObj, {
+    minLevel: 5,
+    disableClickZoom: true
+  });
 
   const handleRemovePlace = (indexToRemove) => {
     setAddedList(prev => prev.filter((_, i) => i !== indexToRemove));
@@ -187,7 +194,7 @@ const Map = () => {
     ) {
       const place = location.state.selectedPlace;
       clearPolylines(polylines);
-      categoryMarkers.forEach(m => m.setMap(null));
+      clearClusteredMarkers();
 
       const lat = parseFloat(place.latitude);
       const lng = parseFloat(place.longitude);
@@ -202,7 +209,7 @@ const Map = () => {
       setSelectedPlaces([place]);
       setShowSidebar(true);
     }
-  }, [mapObj, location.state]);
+  }, [mapObj, location.state, clearClusteredMarkers]);
 
 
   useEffect(() => {
@@ -232,26 +239,14 @@ const Map = () => {
           setError('검색 결과가 없습니다. 다른 조건으로 검색해보세요.');
         }
 
-        for (const place of items) {
-          if (!place.longitude || !place.latitude) continue;
-
-          const lat = parseFloat(place.latitude);
-          const lng = parseFloat(place.longitude);
-          if (isNaN(lat) || isNaN(lng)) continue;
-
-          const marker = new window.kakao.maps.Marker({
-            map: mapObj,
-            position: new window.kakao.maps.LatLng(lat, lng),
-            title: place.name,
-          });
-          markers.push(marker);
-        }
-
+        // 클러스터러를 사용하여 마커 추가 (성능 최적화)
+        const clusteredMarkers = addClusteredMarkers(items);
         allPlaces.push(...items);
+
         setStart(start);
         setEnd(end);
         setMiddlePoint(middlePoint);
-        setCategoryMarkers(markers);
+        setCategoryMarkers(clusteredMarkers);
         setSelectedPlaces(allPlaces.slice(0, 50));
         setShowSidebar(true);
         setShowRoutePanel(true);
@@ -272,7 +267,7 @@ const Map = () => {
     };
 
     fetchData();
-  }, [departure, destination, departures, sort, mapObj, search]);
+  }, [departure, destination, departures, sort, mapObj, search, addClusteredMarkers]);
 
 
   useEffect(() => {
@@ -403,35 +398,23 @@ const Map = () => {
 
     setSelectedCategory(code);
     const allPlaces = [];
-    const markers = [];
 
-    categoryMarkers.forEach(marker => marker.setMap(null));
+    // 기존 클러스터 마커 제거
+    clearClusteredMarkers();
 
     for (const detailCode of detailCodes) {
       try {
         const res = await axios.get(`${API_BASE_URL}/map?search=${search}&sort=${sort}${(departure ? `&start=${departure}` : ``)}${(destination ? `&end=${destination}` : ``)}${(departures.length ? `&${departures.map((d) => (`name=${d}`)).join('&')}` : ``)}&category=${detailCode}`);
         const items = res.data?.list || [];
-
-        for (const place of items) {
-          if (!place.longitude || !place.latitude) continue;
-
-          const lat = parseFloat(place.latitude);
-          const lng = parseFloat(place.longitude);
-          const marker = new window.kakao.maps.Marker({
-            map: mapObj,
-            position: new window.kakao.maps.LatLng(lat, lng),
-            title: place.name
-          });
-          markers.push(marker);
-        }
-
         allPlaces.push(...items);
       } catch (err) {
         console.error(`❌ ${detailCode} 요청 실패:`, err);
       }
     }
 
-    setCategoryMarkers(markers);
+    // 클러스터러를 사용하여 마커 추가 (성능 최적화)
+    const clusteredMarkers = addClusteredMarkers(allPlaces);
+    setCategoryMarkers(clusteredMarkers);
     setSelectedPlaces(allPlaces.slice(0, 50));
     setShowSidebar(true);
   };
