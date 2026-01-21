@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './MainSection.css';
 import dummyPosts from '../data/dummyPosts';
 import { API_BASE_URL } from '../constants';
+import useAutocomplete from '../hooks/useAutocomplete';
 
 const images = [
   '/images/bg1.jpg',
@@ -37,11 +38,12 @@ export default function MainSection() {
   const [departure, setDeparture] = useState('');
   const [destination, setDestination] = useState('');
   const [randomPlace, setRandomPlace] = useState('');
-  const [suggestions, setSuggestions] = useState({});
   const [focusedInput, setFocusedInput] = useState(null);
   const [topPosts, setTopPosts] = useState([]);
   const navigate = useNavigate();
-  const timeoutRef = useRef(null);
+
+  // 자동완성 훅 사용 (캐싱 + 디바운싱 지원)
+  const { suggestions, fetchSuggestions, clearSuggestions } = useAutocomplete(300, 10);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -65,45 +67,39 @@ export default function MainSection() {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchSuggestions = async (query, index = null) => {
-    if (!query.trim()) return;
-    try {
-      const res = await axios.get(`${API_BASE_URL}/map/autocomplete?name=${query}`);
-      const key = index !== null ? index : 'single';
-      const data = res.data.slice(0, 10);
-      setSuggestions((prev) => ({ ...prev, [key]: data }));
-    } catch (err) {
-      const key = index !== null ? index : 'single';
-      setSuggestions((prev) => ({ ...prev, [key]: [] }));
-    }
-  };
-
   const handleDepartureChange = (index, value) => {
     const updated = [...departures];
     updated[index] = value;
     setDepartures(updated);
     setFocusedInput(index);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => fetchSuggestions(value, index), 300);
+    fetchSuggestions(value, String(index));
   };
 
   const handleSingleDepartureChange = (value) => {
     setDeparture(value);
     setFocusedInput('single');
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => fetchSuggestions(value), 300);
+    fetchSuggestions(value, 'single');
   };
 
-  const handleSelectSuggestion = (text, index = null) => {
-    if (index !== null) {
+  const handleDestinationChange = (value) => {
+    setDestination(value);
+    setFocusedInput('destination');
+    fetchSuggestions(value, 'destination');
+  };
+
+  const handleSelectSuggestion = (text, key) => {
+    if (key !== 'single' && key !== 'destination') {
+      // 중간지점 출발지 선택
+      const index = parseInt(key, 10);
       const updated = [...departures];
       updated[index] = text;
       setDepartures(updated);
-      setSuggestions((prev) => ({ ...prev, [index]: [] }));
-    } else {
+    } else if (key === 'single') {
       setDeparture(text);
-      setSuggestions((prev) => ({ ...prev, single: [] }));
+    } else if (key === 'destination') {
+      setDestination(text);
     }
+    clearSuggestions(key);
   };
 
   const handleGetCurrentLocation = (index = null, isDestination = false) => {
@@ -248,10 +244,10 @@ export default function MainSection() {
                         </button>
                       )}
                     </div>
-                    {suggestions[index] && suggestions[index].length > 0 && (
+                    {suggestions[String(index)] && suggestions[String(index)].length > 0 && (
                       <ul className="suggestions-list">
-                        {suggestions[index].map((s, i) => (
-                          <li key={i} onClick={() => handleSelectSuggestion(s.placeName, index)}>
+                        {suggestions[String(index)].map((s, i) => (
+                          <li key={i} onClick={() => handleSelectSuggestion(s.placeName, String(index))}>
                             {s.placeName}
                           </li>
                         ))}
@@ -313,12 +309,7 @@ export default function MainSection() {
                       className="search-input"
                       placeholder="도착지 입력"
                       value={destination}
-                      onChange={(e) => {
-                        setDestination(e.target.value);
-                        setFocusedInput('destination');
-                        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-                        timeoutRef.current = setTimeout(() => fetchSuggestions(e.target.value, 'destination'), 300);
-                      }}
+                      onChange={(e) => handleDestinationChange(e.target.value)}
                     />
                     <button
                       className="location-btn"
@@ -338,10 +329,7 @@ export default function MainSection() {
                   {suggestions.destination && suggestions.destination.length > 0 && (
                     <ul className="suggestions-list">
                       {suggestions.destination.map((s, i) => (
-                        <li key={i} onClick={() => {
-                          setDestination(s.placeName);
-                          setSuggestions((prev) => ({ ...prev, destination: [] }));
-                        }}>
+                        <li key={i} onClick={() => handleSelectSuggestion(s.placeName, 'destination')}>
                           {s.placeName}
                         </li>
                       ))}

@@ -158,6 +158,40 @@ private List<PlaceResponseDto> getFallbackRecommendations(...) {
 
 ---
 
+### 8. 대중교통 경로 시각화 개선 ✅
+
+#### 문제점
+- 대중교통 경로 정보가 단순 텍스트로만 표시
+- 경로 단계별 상세 정보 확인 불가
+- 시각적 계층 구조 부재
+
+#### 해결
+| 개선 항목 | 구현 내용 |
+|----------|----------|
+| 카드형 경로 UI | 순위(🏆), 시간, 요금, 환승 정보 한눈에 표시 |
+| 경로 미리보기 | 도보/지하철/버스 아이콘 + 노선 색상 배지 |
+| 상세보기 확장 | 클릭 시 단계별 타임라인 표시 |
+| 타임라인 뷰 | 수직 연결선 + 교통수단별 색상 구분 |
+
+```
+[🏆] 32분 • 1,450원
+     도보 5분 • 환승 2회
+     🚶 → 🚇 → 🚌 → 🚶
+     [상세보기 ▼]
+     ─────────────────
+     🚶 도보 | 5분
+        강남역 3번출구까지 도보로 이동
+     🚇 지하철 | 15분
+        강남역 승차 - 2호선 - 홍대입구역 하차
+     ...
+```
+
+#### 수정된 파일
+- `frontend/src/components/RouteSummary.js`: 카드 UI, 확장 가능한 타임라인
+- `frontend/src/components/RouteSummary.css`: 타임라인 스타일, 교통수단별 색상
+
+---
+
 ## 코드 품질 분석 결과
 
 ### 발견된 문제점 (향후 개선 예정)
@@ -170,7 +204,7 @@ private List<PlaceResponseDto> getFallbackRecommendations(...) {
 #### 프론트엔드
 1. ~~**Kakao Map SDK 로딩 무한 폴링**~~ - ✅ 해결됨
 2. ~~**API 에러 시 사용자 피드백 없음**~~ - ✅ 해결됨
-3. **자동완성 캐싱 없음** - 중복 API 호출
+3. ~~**자동완성 캐싱 없음**~~ - ✅ 해결됨 (useAutocomplete 훅)
 4. **중복 코드** - Map.jsx와 Schedule.jsx 간 경로 그리기 로직
 
 #### 미활용 기능
@@ -193,16 +227,49 @@ private List<PlaceResponseDto> getFallbackRecommendations(...) {
 
 ---
 
+### 9. 자동완성 캐싱 추가 ✅
+
+#### 문제점
+- 동일한 검색어에 대해 매번 API 요청 발생
+- 빠른 타이핑 시 불필요한 요청 누적
+- Map.jsx와 MainSection.jsx에서 중복된 자동완성 로직
+
+#### 해결
+| 개선 항목 | 구현 내용 |
+|----------|----------|
+| 커스텀 훅 생성 | `useAutocomplete.js` - 재사용 가능한 자동완성 로직 |
+| 캐싱 | 5분 만료 시간, 최대 100개 캐시 항목 |
+| 디바운싱 | 300ms 딜레이로 불필요한 API 호출 방지 |
+| 요청 취소 | AbortController로 이전 요청 취소 |
+
+```javascript
+// 사용 예시
+const { suggestions, fetchSuggestions, clearSuggestions } = useAutocomplete(300, 10);
+
+// 입력 변경 시
+fetchSuggestions(value, 'inputKey');
+
+// 선택 후 초기화
+clearSuggestions('inputKey');
+```
+
+#### 수정된 파일
+- `frontend/src/hooks/useAutocomplete.js`: 새로 생성된 캐싱 훅
+- `frontend/src/pages/Map.jsx`: 훅 적용
+- `frontend/src/components/MainSection.jsx`: 훅 적용
+
+---
+
 ## 다음 작업 예정
 
 ### 완료된 작업 ✅
 - [x] 보안 이슈 수정 완료
 - [x] OpenAI API 응답 안정화 (다중 형식 파싱 + fallback)
 - [x] 에러 처리 및 사용자 피드백 강화 (Map, Schedule)
+- [x] 대중교통 경로 시각화 개선
+- [x] 자동완성 캐싱 추가
 
 ### 중간 우선순위
-- [ ] 대중교통 경로 시각화 개선
-- [ ] 자동완성 캐싱 추가
 - [ ] Kakao Map 추가 기능 활용
 
 ### 낮은 우선순위

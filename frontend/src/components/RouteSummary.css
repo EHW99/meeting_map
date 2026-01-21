@@ -1,106 +1,420 @@
-/* RouteSummary.css - Updated for new design system */
+/* RouteSummary.css - Enhanced Transit Visualization */
+
 .route-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
 
-.route-group h4 {
+.route-group-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--color-neutral-700);
   margin-bottom: var(--space-3);
 }
 
+.route-from-icon {
+  font-size: var(--font-size-base);
+}
+
+/* ===== TRANSIT ROUTES ===== */
+.transit-routes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.transit-card {
+  background: var(--color-neutral-0);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.transit-card:hover {
+  border-color: var(--color-neutral-300);
+  box-shadow: var(--shadow-sm);
+}
+
+.transit-card.selected {
+  border-color: #3B82F6;
+  background: #F0F9FF;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.transit-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+}
+
+.transit-rank {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-neutral-500);
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-full);
+}
+
+.transit-card.selected .transit-rank {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.transit-summary {
+  flex: 1;
+  min-width: 0;
+}
+
+.transit-main-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.transit-time {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-neutral-800);
+}
+
+.transit-divider {
+  color: var(--color-neutral-300);
+}
+
+.transit-fare {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-600);
+}
+
+.transit-sub-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-neutral-500);
+}
+
+/* Route Preview (icons) */
+.transit-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.mode-badge {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-100);
+}
+
+.mode-badge.walk {
+  background: #E5E7EB;
+}
+
+.mode-badge.subway {
+  background: #DBEAFE;
+  color: white;
+}
+
+.mode-badge.bus {
+  background: #D1FAE5;
+  color: white;
+}
+
+.route-arrow {
+  font-size: 10px;
+  color: var(--color-neutral-400);
+}
+
+.more-steps {
+  font-size: var(--font-size-xs);
+  color: var(--color-neutral-500);
+  padding: 0 var(--space-1);
+}
+
+/* Expand Button */
+.transit-expand-btn {
+  width: 100%;
+  padding: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-500);
+  background: var(--color-neutral-50);
+  border: none;
+  border-top: 1px solid var(--color-neutral-100);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.transit-expand-btn:hover {
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+}
+
+/* ===== TRANSIT DETAIL (Expanded) ===== */
+.transit-detail {
+  padding: var(--space-4);
+  background: var(--color-neutral-50);
+  border-top: 1px solid var(--color-neutral-100);
+}
+
+.transit-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-step {
+  display: flex;
+  gap: var(--space-3);
+  position: relative;
+}
+
+.timeline-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 32px;
+}
+
+.marker-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: var(--radius-full);
+  background: var(--color-neutral-200);
+  z-index: 1;
+}
+
+.marker-icon.walk {
+  background: #9CA3AF;
+}
+
+.marker-icon.subway {
+  background: #3B82F6;
+}
+
+.marker-icon.bus {
+  background: #10B981;
+}
+
+.timeline-line {
+  flex: 1;
+  width: 3px;
+  min-height: 20px;
+  background: var(--color-neutral-300);
+  margin: var(--space-1) 0;
+}
+
+.timeline-step.walk .timeline-line {
+  background: #9CA3AF;
+  background-image: repeating-linear-gradient(
+    0deg,
+    #9CA3AF,
+    #9CA3AF 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.timeline-content {
+  flex: 1;
+  padding-bottom: var(--space-4);
+  min-width: 0;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.step-mode {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-0);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-500);
+}
+
+.timeline-step.walk .step-mode {
+  background: #6B7280;
+}
+
+.timeline-step.subway .step-mode {
+  background: #3B82F6;
+}
+
+.timeline-step.bus .step-mode {
+  background: #10B981;
+}
+
+.step-time {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-600);
+}
+
+.step-distance {
+  font-size: var(--font-size-xs);
+  color: var(--color-neutral-500);
+}
+
+.step-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-neutral-800);
+  margin-bottom: var(--space-1);
+  line-height: 1.4;
+}
+
+.step-locations {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-neutral-500);
+}
+
+.step-arrow {
+  color: var(--color-neutral-400);
+}
+
+/* ===== CAR/WALK ROUTES ===== */
 .route-button-group {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: var(--space-2);
 }
 
-.route-button-group.spaced {
-  margin-top: var(--space-3);
-}
-
 .route-button {
-  flex: 1 1 calc(33.333% - var(--space-2));
-  min-width: 180px;
-  padding: var(--space-3);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-neutral-700);
-  background: var(--color-neutral-50);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-neutral-0);
   border: 1px solid var(--color-neutral-200);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--transition-fast);
   text-align: left;
-  line-height: 1.4;
 }
 
 .route-button:hover {
-  background: var(--color-neutral-100);
+  background: var(--color-neutral-50);
   border-color: var(--color-neutral-300);
 }
 
 .route-button.selected {
-  color: var(--color-primary-700);
-  background: var(--color-primary-50);
   border-color: var(--color-primary-500);
+  background: var(--color-primary-50);
 }
 
-/* Car mode */
 .route-button.car {
-  border-left: 3px solid var(--color-primary-500);
+  border-left: 4px solid var(--color-primary-500);
 }
 
-.route-button.car.selected {
-  background: var(--color-primary-50);
-  border-color: var(--color-primary-500);
-}
-
-/* Transit mode */
-.route-button.transit {
-  border-left: 3px solid #3B82F6;
-}
-
-.route-button.transit:hover {
-  background: #EFF6FF;
-  border-color: #93C5FD;
-}
-
-.route-button.transit.selected {
-  color: #1E40AF;
-  background: #DBEAFE;
-  border-color: #3B82F6;
-}
-
-/* Walk mode */
 .route-button.walk {
-  border-left: 3px solid #4D524C;
+  border-left: 4px solid #6B7280;
 }
 
-.route-button.walk:hover {
-  background: #F5F5F5;
-  border-color: #9CA3AF;
+.route-icon {
+  font-size: var(--font-size-xl);
 }
 
-.route-button.walk.selected {
-  color: #1F2937;
-  background: #E5E7EB;
-  border-color: #4D524C;
+.route-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
-/* Responsive */
+.route-time {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-800);
+}
+
+.route-meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-neutral-500);
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .route-button {
-    flex: 1 1 100%;
-    min-width: auto;
-    padding: var(--space-2) var(--space-3);
+  .transit-card-header {
+    flex-wrap: wrap;
+    padding: var(--space-3);
+  }
+
+  .transit-preview {
+    width: 100%;
+    margin-top: var(--space-2);
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+  }
+
+  .transit-summary {
+    flex: 1;
+  }
+
+  .transit-rank {
+    width: 28px;
+    height: 28px;
     font-size: var(--font-size-xs);
   }
 
-  .route-button-group {
-    gap: var(--space-1);
+  .transit-time {
+    font-size: var(--font-size-sm);
+  }
+
+  .step-description {
+    font-size: var(--font-size-xs);
+  }
+
+  .timeline-content {
+    padding-bottom: var(--space-3);
+  }
+
+  .route-button {
+    padding: var(--space-2) var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .transit-main-info {
+    flex-wrap: wrap;
+  }
+
+  .transit-sub-info {
+    flex-wrap: wrap;
+  }
+
+  .step-locations {
+    flex-wrap: wrap;
   }
 }

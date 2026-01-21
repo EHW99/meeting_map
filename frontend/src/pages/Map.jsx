@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './Map.css';
 import RouteSummary from '../components/RouteSummary';
 import { drawPolyline, drawTransitPlan, clearPolylines } from '../components/RouteDrawer';
-import { API_BASE_URL } from '../constants.js'
+import { API_BASE_URL } from '../constants.js';
+import useAutocomplete from '../hooks/useAutocomplete';
 
 export const categoryList = [
   { code: 'tour', name: '관광지', icon: '🏛️' },
@@ -61,46 +62,30 @@ const Map = () => {
   const [searchDeparture, setSearchDeparture] = useState('');
   const [searchDestination, setSearchDestination] = useState('');
   const [searchDepartures, setSearchDepartures] = useState(['', '']);
-  const [suggestions, setSuggestions] = useState({});
-  const timeoutRef = useRef(null);
+
+  // 자동완성 훅 사용 (캐싱 포함)
+  const { suggestions, fetchSuggestions, clearSuggestions } = useAutocomplete(300, 5);
 
   const handleRemovePlace = (indexToRemove) => {
     setAddedList(prev => prev.filter((_, i) => i !== indexToRemove));
   };
 
   // Search panel helper functions
-  const fetchSuggestions = async (query, key) => {
-    if (!query.trim()) {
-      setSuggestions(prev => ({ ...prev, [key]: [] }));
-      return;
-    }
-    try {
-      const res = await axios.get(`${API_BASE_URL}/map/autocomplete?name=${encodeURIComponent(query)}`);
-      setSuggestions(prev => ({ ...prev, [key]: res.data.slice(0, 5) }));
-    } catch (err) {
-      console.error('자동완성 오류:', err);
-      setSuggestions(prev => ({ ...prev, [key]: [] }));
-    }
-  };
-
   const handleSearchDepartureChange = (value) => {
     setSearchDeparture(value);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => fetchSuggestions(value, 'departure'), 300);
+    fetchSuggestions(value, 'departure');
   };
 
   const handleSearchDestinationChange = (value) => {
     setSearchDestination(value);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => fetchSuggestions(value, 'destination'), 300);
+    fetchSuggestions(value, 'destination');
   };
 
   const handleMultiDepartureChange = (index, value) => {
     const updated = [...searchDepartures];
     updated[index] = value;
     setSearchDepartures(updated);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => fetchSuggestions(value, `multi-${index}`), 300);
+    fetchSuggestions(value, `multi-${index}`);
   };
 
   const handleSelectSuggestion = (text, key) => {
@@ -114,7 +99,7 @@ const Map = () => {
       updated[index] = text;
       setSearchDepartures(updated);
     }
-    setSuggestions(prev => ({ ...prev, [key]: [] }));
+    clearSuggestions(key);
   };
 
   const handleGetCurrentLocation = (key) => {
