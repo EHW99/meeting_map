@@ -21,73 +21,53 @@ https://meeting-map.kro.kr
 
 ## 시연 영상
 
-### 회원가입 / 로그인
-<img src="asset/Animation5.gif" width="600"/>
+|회원가입 / 로그인|메인페이지|
+|:--:|:--:|
+|<img src="asset/Animation5.gif" width="350"/>|<img src="asset/Animation4.gif" width="350"/>|
+|일반 로그인과 카카오 OAuth 로그인 지원|오늘의 추천 게시글과 랜덤 장소 추천|
 
-> 일반 로그인과 카카오 OAuth 로그인 지원
+|지도 - 경로 탐색|지도 - 중간지점 탐색|
+|:--:|:--:|
+|<img src="asset/Animation1.gif" width="350"/>|<img src="asset/Animation2.gif" width="350"/>|
+|출발지/도착지 입력 시 최적 경로 표시|최대 4개 출발지의 중간 지점 계산|
 
-### 메인페이지
-<img src="asset/Animation4.gif" width="600"/>
+|스케줄 생성|게시판 / 글쓰기|
+|:--:|:--:|
+|<img src="asset/Animation9.gif" width="350"/>|<img src="asset/Animation10.gif" width="350"/>|
+|AI 추천 또는 직접 장소 선택|카테고리별 게시판에서 후기 공유|
 
-> 오늘의 추천 게시글과 랜덤 장소 추천
-
-### 지도 - 경로 탐색
-<img src="asset/Animation1.gif" width="600"/>
-
-> 출발지/도착지 입력 시 최적 경로 및 주변 장소 표시
-
-### 지도 - 중간지점 탐색
-<img src="asset/Animation2.gif" width="600"/>
-
-> 최대 4개 출발지의 중간 지점 자동 계산
-
-### 스케줄 생성
-<img src="asset/Animation9.gif" width="600"/>
-
-> AI 추천 또는 직접 장소 선택하여 일정 생성
-
-### 게시판 / 글쓰기
-<img src="asset/Animation10.gif" width="600"/>
-
-> 카테고리별 게시판에서 장소 후기 공유
-
-### 마이페이지
-<img src="asset/Animation11.gif" width="600"/>
-
-> 내가 작성한 글, 좋아요, 스크랩, 일정 관리
-
-### 그룹 기능
-<img src="asset/Animation12.gif" width="600"/>
-
-> 그룹 생성 및 멤버와 일정 공유
+|마이페이지|그룹 기능|
+|:--:|:--:|
+|<img src="asset/Animation11.gif" width="350"/>|<img src="asset/Animation12.gif" width="350"/>|
+|작성한 글, 좋아요, 스크랩, 일정 관리|그룹 생성 및 멤버와 일정 공유|
 
 ---
 
 ## 기술 스택
 
 ### Backend
-![Java](https://img.shields.io/badge/Java_17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot_3.4-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
-![Spring Security](https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=spring-security&logoColor=white)
-![JPA](https://img.shields.io/badge/JPA/Hibernate-59666C?style=for-the-badge&logo=hibernate&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL_8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
+![Java](https://img.shields.io/badge/Java_17-ED8B00?style=flat&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot_3.4-6DB33F?style=flat&logo=spring-boot&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring_Security-6DB33F?style=flat&logo=spring-security&logoColor=white)
+![JPA](https://img.shields.io/badge/JPA/Hibernate-59666C?style=flat&logo=hibernate&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL_8.0-4479A1?style=flat&logo=mysql&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=flat&logo=json-web-tokens&logoColor=white)
 
 ### Frontend
-![React](https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![React Router](https://img.shields.io/badge/React_Router_7-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
-![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![React](https://img.shields.io/badge/React_19-61DAFB?style=flat&logo=react&logoColor=black)
+![React Router](https://img.shields.io/badge/React_Router_7-CA4245?style=flat&logo=react-router&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat&logo=axios&logoColor=white)
 
 ### External API
-![Kakao](https://img.shields.io/badge/Kakao_Maps-FFCD00?style=for-the-badge&logo=kakao&logoColor=black)
-![TMap](https://img.shields.io/badge/TMap_API-FF0000?style=for-the-badge&logoColor=white)
-![Google](https://img.shields.io/badge/Google_Places-4285F4?style=for-the-badge&logo=google&logoColor=white)
-![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
+![Kakao](https://img.shields.io/badge/Kakao_Maps-FFCD00?style=flat&logo=kakao&logoColor=black)
+![TMap](https://img.shields.io/badge/TMap_API-FF0000?style=flat&logoColor=white)
+![Google](https://img.shields.io/badge/Google_Places-4285F4?style=flat&logo=google&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=flat&logo=openai&logoColor=white)
 
 ### Infra
-![AWS S3](https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazon-s3&logoColor=white)
-![AWS RDS](https://img.shields.io/badge/AWS_RDS-527FFF?style=for-the-badge&logo=amazon-rds&logoColor=white)
-![AWS EC2](https://img.shields.io/badge/AWS_EC2-FF9900?style=for-the-badge&logo=amazon-ec2&logoColor=white)
+![AWS S3](https://img.shields.io/badge/AWS_S3-569A31?style=flat&logo=amazon-s3&logoColor=white)
+![AWS RDS](https://img.shields.io/badge/AWS_RDS-527FFF?style=flat&logo=amazon-rds&logoColor=white)
+![AWS EC2](https://img.shields.io/badge/AWS_EC2-FF9900?style=flat&logo=amazon-ec2&logoColor=white)
 
 ---
 
