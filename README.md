@@ -21,25 +21,73 @@ https://meeting-map.kro.kr
 
 ## 시연 영상
 
-| 회원가입 / 로그인 | 메인페이지 |
-|:---:|:---:|
-| <img src="asset/Animation5.gif" width="400"/> | <img src="asset/Animation4.gif" width="400"/> |
-| 일반 로그인과 카카오 OAuth 로그인 지원 | 오늘의 추천 게시글과 랜덤 장소 추천 |
+### 회원가입 / 로그인
+<img src="asset/Animation5.gif" width="600"/>
 
-| 지도 - 경로 탐색 | 지도 - 중간지점 탐색 |
-|:---:|:---:|
-| <img src="asset/Animation1.gif" width="400"/> | <img src="asset/Animation2.gif" width="400"/> |
-| 출발지/도착지 입력 시 최적 경로 및 주변 장소 표시 | 최대 4개 출발지의 중간 지점 자동 계산 |
+> 일반 로그인과 카카오 OAuth 로그인 지원
 
-| 스케줄 생성 | 게시판 / 글쓰기 |
-|:---:|:---:|
-| <img src="asset/Animation9.gif" width="400"/> | <img src="asset/Animation10.gif" width="400"/> |
-| AI 추천 또는 직접 장소 선택하여 일정 생성 | 카테고리별 게시판에서 장소 후기 공유 |
+### 메인페이지
+<img src="asset/Animation4.gif" width="600"/>
 
-| 마이페이지 | 그룹 기능 |
-|:---:|:---:|
-| <img src="asset/Animation11.gif" width="400"/> | <img src="asset/Animation12.gif" width="400"/> |
-| 내가 작성한 글, 좋아요, 스크랩, 일정 관리 | 그룹 생성 및 멤버와 일정 공유 |
+> 오늘의 추천 게시글과 랜덤 장소 추천
+
+### 지도 - 경로 탐색
+<img src="asset/Animation1.gif" width="600"/>
+
+> 출발지/도착지 입력 시 최적 경로 및 주변 장소 표시
+
+### 지도 - 중간지점 탐색
+<img src="asset/Animation2.gif" width="600"/>
+
+> 최대 4개 출발지의 중간 지점 자동 계산
+
+### 스케줄 생성
+<img src="asset/Animation9.gif" width="600"/>
+
+> AI 추천 또는 직접 장소 선택하여 일정 생성
+
+### 게시판 / 글쓰기
+<img src="asset/Animation10.gif" width="600"/>
+
+> 카테고리별 게시판에서 장소 후기 공유
+
+### 마이페이지
+<img src="asset/Animation11.gif" width="600"/>
+
+> 내가 작성한 글, 좋아요, 스크랩, 일정 관리
+
+### 그룹 기능
+<img src="asset/Animation12.gif" width="600"/>
+
+> 그룹 생성 및 멤버와 일정 공유
+
+---
+
+## 기술 스택
+
+### Backend
+![Java](https://img.shields.io/badge/Java_17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot_3.4-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=spring-security&logoColor=white)
+![JPA](https://img.shields.io/badge/JPA/Hibernate-59666C?style=for-the-badge&logo=hibernate&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL_8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
+
+### Frontend
+![React](https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![React Router](https://img.shields.io/badge/React_Router_7-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+
+### External API
+![Kakao](https://img.shields.io/badge/Kakao_Maps-FFCD00?style=for-the-badge&logo=kakao&logoColor=black)
+![TMap](https://img.shields.io/badge/TMap_API-FF0000?style=for-the-badge&logoColor=white)
+![Google](https://img.shields.io/badge/Google_Places-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
+
+### Infra
+![AWS S3](https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazon-s3&logoColor=white)
+![AWS RDS](https://img.shields.io/badge/AWS_RDS-527FFF?style=for-the-badge&logo=amazon-rds&logoColor=white)
+![AWS EC2](https://img.shields.io/badge/AWS_EC2-FF9900?style=for-the-badge&logo=amazon-ec2&logoColor=white)
 
 ---
 
@@ -82,43 +130,6 @@ https://meeting-map.kro.kr
 ### 8. 인증
 - JWT 기반 인증
 - 카카오 OAuth 2.0 로그인 지원
-
----
-
-## 기술 스택
-
-### Backend
-| 기술 | 설명 |
-|------|------|
-| Java 17 | 메인 언어 |
-| Spring Boot 3.4 | 웹 프레임워크 |
-| Spring Security | 인증/인가 (JWT) |
-| Spring Data JPA | ORM |
-| MySQL 8.0 | 데이터베이스 |
-| WebFlux (WebClient) | 외부 API 비동기 호출 |
-| AWS S3 | 이미지 파일 저장 |
-
-### Frontend
-| 기술 | 설명 |
-|------|------|
-| React 19 | UI 라이브러리 |
-| React Router 7 | 라우팅 |
-| Axios | HTTP 클라이언트 |
-| Kakao Maps SDK | 지도 표시 |
-
-### 외부 API
-| API | 용도 |
-|-----|------|
-| Kakao Maps API | 지도 표시, 좌표 변환, 장소 검색 |
-| TMap API | 경로 탐색 (차량, 대중교통, 도보) |
-| Google Places API | 장소 상세 정보, 평점, 리뷰 |
-| Tour API (공공데이터) | 국내 관광지, 음식점, 숙박 정보 |
-| OpenAI API | AI 기반 스케줄 추천 |
-
-### Infra
-| 기술 | 설명 |
-|------|------|
-| AWS S3 | 이미지 저장소 |
 
 ---
 
