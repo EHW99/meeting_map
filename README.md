@@ -21,45 +21,25 @@ https://meeting-map.kro.kr
 
 ## 시연 영상
 
-### 회원가입 / 로그인
-<img src="asset/Animation5.gif" width="600"/>
+|회원가입 / 로그인|메인페이지|
+|:--:|:--:|
+|<img src="asset/Animation5.gif" width="350"/>|<img src="asset/Animation4.gif" width="350"/>|
+|일반 로그인과 카카오 OAuth 로그인 지원|오늘의 추천 게시글과 랜덤 장소 추천|
 
-> 일반 로그인과 카카오 OAuth 로그인 지원
+|지도 - 경로 탐색|지도 - 중간지점 탐색|
+|:--:|:--:|
+|<img src="asset/Animation1.gif" width="350"/>|<img src="asset/Animation2.gif" width="350"/>|
+|출발지/도착지 입력 시 최적 경로 표시|최대 4개 출발지의 중간 지점 계산|
 
-### 메인페이지
-<img src="asset/Animation4.gif" width="600"/>
+|스케줄 생성|게시판 / 글쓰기|
+|:--:|:--:|
+|<img src="asset/Animation9.gif" width="350"/>|<img src="asset/Animation10.gif" width="350"/>|
+|AI 추천 또는 직접 장소 선택|카테고리별 게시판에서 후기 공유|
 
-> 오늘의 추천 게시글과 랜덤 장소 추천
-
-### 지도 - 경로 탐색
-<img src="asset/Animation1.gif" width="600"/>
-
-> 출발지/도착지 입력 시 최적 경로 및 주변 장소 표시
-
-### 지도 - 중간지점 탐색
-<img src="asset/Animation2.gif" width="600"/>
-
-> 최대 4개 출발지의 중간 지점 자동 계산
-
-### 스케줄 생성
-<img src="asset/Animation9.gif" width="600"/>
-
-> AI 추천 또는 직접 장소 선택하여 일정 생성
-
-### 게시판 / 글쓰기
-<img src="asset/Animation10.gif" width="600"/>
-
-> 카테고리별 게시판에서 장소 후기 공유
-
-### 마이페이지
-<img src="asset/Animation11.gif" width="600"/>
-
-> 내가 작성한 글, 좋아요, 스크랩, 일정 관리
-
-### 그룹 기능
-<img src="asset/Animation12.gif" width="600"/>
-
-> 그룹 생성 및 멤버와 일정 공유
+|마이페이지|그룹 기능|
+|:--:|:--:|
+|<img src="asset/Animation11.gif" width="350"/>|<img src="asset/Animation12.gif" width="350"/>|
+|작성한 글, 좋아요, 스크랩, 일정 관리|그룹 생성 및 멤버와 일정 공유|
 
 ---
 
