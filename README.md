@@ -21,61 +21,25 @@ https://meeting-map.kro.kr
 
 ## 시연 영상
 
-<details>
-<summary><b>회원가입 / 로그인</b></summary>
-<br>
-<img src="asset/Animation5.gif" width="700"/>
-<p>일반 로그인과 카카오 OAuth 로그인을 지원합니다.</p>
-</details>
+| 회원가입 / 로그인 | 메인페이지 |
+|:---:|:---:|
+| <img src="asset/Animation5.gif" width="400"/> | <img src="asset/Animation4.gif" width="400"/> |
+| 일반 로그인과 카카오 OAuth 로그인 지원 | 오늘의 추천 게시글과 랜덤 장소 추천 |
 
-<details>
-<summary><b>메인페이지</b></summary>
-<br>
-<img src="asset/Animation4.gif" width="700"/>
-<p>오늘의 추천 게시글과 랜덤 장소 추천 기능을 제공합니다.</p>
-</details>
+| 지도 - 경로 탐색 | 지도 - 중간지점 탐색 |
+|:---:|:---:|
+| <img src="asset/Animation1.gif" width="400"/> | <img src="asset/Animation2.gif" width="400"/> |
+| 출발지/도착지 입력 시 최적 경로 및 주변 장소 표시 | 최대 4개 출발지의 중간 지점 자동 계산 |
 
-<details>
-<summary><b>지도 - 출발지/도착지 경로 탐색</b></summary>
-<br>
-<img src="asset/Animation1.gif" width="700"/>
-<p>출발지와 도착지를 입력하면 최적 경로와 주변 장소를 표시합니다.</p>
-</details>
+| 스케줄 생성 | 게시판 / 글쓰기 |
+|:---:|:---:|
+| <img src="asset/Animation9.gif" width="400"/> | <img src="asset/Animation10.gif" width="400"/> |
+| AI 추천 또는 직접 장소 선택하여 일정 생성 | 카테고리별 게시판에서 장소 후기 공유 |
 
-<details>
-<summary><b>지도 - 다중 출발지 중간지점 탐색</b></summary>
-<br>
-<img src="asset/Animation2.gif" width="700"/>
-<p>최대 4개의 출발지를 입력하면 모두가 만나기 좋은 중간 지점을 자동 계산합니다.</p>
-</details>
-
-<details>
-<summary><b>스케줄 생성</b></summary>
-<br>
-<img src="asset/Animation9.gif" width="700"/>
-<p>AI 추천 또는 직접 장소를 선택하여 일정을 생성할 수 있습니다.</p>
-</details>
-
-<details>
-<summary><b>게시판 / 글쓰기</b></summary>
-<br>
-<img src="asset/Animation10.gif" width="700"/>
-<p>카테고리별 게시판에서 장소 후기를 공유하고 소통합니다.</p>
-</details>
-
-<details>
-<summary><b>마이페이지</b></summary>
-<br>
-<img src="asset/Animation11.gif" width="700"/>
-<p>내가 작성한 글, 좋아요한 글, 저장한 글, 일정을 관리합니다.</p>
-</details>
-
-<details>
-<summary><b>그룹 기능</b></summary>
-<br>
-<img src="asset/Animation12.gif" width="700"/>
-<p>그룹을 만들어 멤버들과 일정을 공유하고 소통할 수 있습니다.</p>
-</details>
+| 마이페이지 | 그룹 기능 |
+|:---:|:---:|
+| <img src="asset/Animation11.gif" width="400"/> | <img src="asset/Animation12.gif" width="400"/> |
+| 내가 작성한 글, 좋아요, 스크랩, 일정 관리 | 그룹 생성 및 멤버와 일정 공유 |
 
 ---
 
